@@ -20,5 +20,10 @@ public class searchIntent extends AppCompatActivity {
         String movieRawInput = textInputMovie.getEditText().getText().toString();
         //convert it to movie api standard
         String movieInput = movieRawInput.replace(" ", "+");
+        String URL = "http://www.omdbapi.com/?t=" + movieInput + "&apikey=567b015";
+
+
+
+
     }
 }
