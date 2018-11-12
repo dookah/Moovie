@@ -1,6 +1,7 @@
 package com.example.joshuadean.movieapp;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
@@ -103,8 +104,9 @@ public class searchIntent extends AppCompatActivity {
         ActivityCompat.requestPermissions(searchIntent.this,
                 new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                 1);
-        //Check if the permission was granted before we try and access the lat and Longi
-        if (ContextCompat.checkSelfPermission(searchIntent.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+
+        if (ContextCompat.checkSelfPermission(searchIntent.this, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
             // Make an instance of the Location Android Inbuult API.
             LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
             //Use GPS to get location from provider
@@ -114,6 +116,9 @@ public class searchIntent extends AppCompatActivity {
             lat = lastKnownLocation.getLatitude();
             longi = lastKnownLocation.getLongitude();
         }
+
+        Intent intent = new Intent(this, addedMovie.class);
+        startActivity(intent);
     }
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
