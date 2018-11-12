@@ -1,10 +1,15 @@
 package com.example.joshuadean.movieapp;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.support.design.widget.TextInputLayout;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -13,6 +18,12 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
+
+//Location Imports
+import android.content.Context;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 
 
 public class searchIntent extends AppCompatActivity {
@@ -53,7 +64,8 @@ public class searchIntent extends AppCompatActivity {
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-
+                Toast.makeText(searchIntent.this,
+                        "No Network, Using Cache!", Toast.LENGTH_LONG).show();
             }
         });
 
@@ -75,6 +87,53 @@ public class searchIntent extends AppCompatActivity {
         //Update the movie Title on the page
         TextView metaArea = findViewById(R.id.metaBox);
         metaArea.setText(movie.Metascore);
+        //Update the movie Title on the page
+        TextView imdbArea = findViewById(R.id.imdbBox);
+        imdbArea.setText(movie.imdbRating);
+
+
 
     }
+    public void seenMovie(View view) {//for when you click on the Seen button
+
+        double lat = 0;
+        double longi = 0;
+
+        //Request android Permission
+        ActivityCompat.requestPermissions(searchIntent.this,
+                new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                1);
+        //Check if the permission was granted before we try and access the lat and Longi
+        if (ContextCompat.checkSelfPermission(searchIntent.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            // Make an instance of the Location Android Inbuult API.
+            LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+            //Use GPS to get location from provider
+            String locationProvider = LocationManager.GPS_PROVIDER;
+            Location lastKnownLocation = locationManager.getLastKnownLocation(locationProvider);
+            //New vairables to hold Lat and Long of phone
+            lat = lastKnownLocation.getLatitude();
+            longi = lastKnownLocation.getLongitude();
+        }
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case 1: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    // permission was granted, yay! Do the work!
+                    // display short notification stating permission granted
+                    Toast.makeText(searchIntent.this, "Location Permission Granted!", Toast.LENGTH_SHORT).show();
+
+                } else {
+
+                    Toast.makeText(searchIntent.this, "Permission Denied. Locations will not be saved.", Toast.LENGTH_SHORT).show();
+                }
+                return;
+            }
+        }
+    }
+
 }
