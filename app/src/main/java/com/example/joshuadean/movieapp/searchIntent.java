@@ -109,12 +109,16 @@ public class searchIntent extends AppCompatActivity {
             //Use GPS to get location from provider
             String locationProvider = LocationManager.GPS_PROVIDER;
             Location lastKnownLocation = locationManager.getLastKnownLocation(locationProvider);
+
             //New vairables to hold Lat and Long of phone
             lat = lastKnownLocation.getLatitude();
-            longi = lastKnownLocation.getLongitude();}
+            longi = lastKnownLocation.getLongitude();
+        }
 
+        //Grab the current films title
+        TextView nameBox = findViewById(R.id.titleBox);
+        String name = nameBox.getText().toString();
 
-        //runs if we have permissions
         //make a new intent to show a film has been saved
         Intent intent = new Intent(this, addedMovie.class);
 
@@ -122,6 +126,8 @@ public class searchIntent extends AppCompatActivity {
         Bundle coord = new Bundle();
         coord.putDouble("lat", lat);
         coord.putDouble("longi", longi);
+        coord.putString("movieName", name);
+        coord.putString("context", "Seen Movies!");
         intent.putExtras(coord);
 
         //Start the seen film page

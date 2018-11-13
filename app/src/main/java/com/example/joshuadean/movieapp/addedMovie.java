@@ -23,12 +23,20 @@ public class addedMovie extends AppCompatActivity {
         //assign them to variables
         double lat = Coord.getDouble("lat");
         double longi = Coord.getDouble("longi");
+        String name = Coord.getString("movieName");
+        String context = Coord.getString("context");
 
         TextView latiView = findViewById(R.id.latText);
-        TextView longiView = findViewById(R.id.longiText);
+        TextView longiView = findViewById(R.id.LongiText);
+        TextView ps = findViewById(R.id.ps);
+
+
+
 
         latiView.setText(Double.toString(lat));
         longiView.setText(Double.toString(longi));
+
+        ps.setText(name + " is now in your " + context);
 
 
 }}

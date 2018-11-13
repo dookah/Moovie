@@ -22,7 +22,7 @@
 
 
     <TextView
-        android:id="@+id/textView5"
+        android:id="@+id/ps"
         android:layout_width="wrap_content"
         android:layout_height="26dp"
         android:text="P.S. That Movie Is now in your database!"
@@ -40,7 +40,7 @@
         android:textAlignment="center"
         android:textAllCaps="false"
         android:textAppearance="@android:style/TextAppearance.Material.Medium"
-        app:layout_constraintBottom_toTopOf="@+id/textView5"
+        app:layout_constraintBottom_toTopOf="@+id/ps"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView4"
@@ -51,21 +51,21 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="TextView"
-        app:layout_constraintBottom_toTopOf="@+id/textView8"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView4"
-        app:layout_constraintVertical_bias="0.292" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.87" />
 
     <TextView
-        android:id="@+id/longiText"
+        android:id="@+id/LongiText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="TextView"
-        app:layout_constraintBottom_toTopOf="@+id/textView8"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/latText" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.923" />
 
 </android.support.constraint.ConstraintLayout>
