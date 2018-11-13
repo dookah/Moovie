@@ -90,6 +90,7 @@ public class searchIntent extends AppCompatActivity {
                             movieDatabase movies = new movieDatabase("ahaha", "ahah", "dd", "dddddd", "ddd");
                             //Save the object into the database
                             movies.save();
+
                             renderPage(movie);
                         }
                     }
@@ -107,7 +108,8 @@ public class searchIntent extends AppCompatActivity {
 
     }
     public void renderPage(Movies movie){
-
+        movieDatabase book = movieDatabase.findById(movieDatabase.class, 1);
+        String tittle = book.title;
 
         //Update the movie Title on the page
         TextView titleArea = findViewById(R.id.titleBox);
