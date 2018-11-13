@@ -31,5 +31,7 @@ dependencies {
     //I use this third party library to convert JSON to Java objects
     compile 'com.android.volley:volley:1.1.1'
     //Simple API calls library, used in searchMovies intent.
+    compile 'com.github.satyan:sugar:1.5'
+
 
 }

@@ -28,6 +28,7 @@ public class Movies {
     public String Production;
     public String Website;
     public String Response;
+    public String Error;
 }
 class ArrayData{ //Class to hold the array data from the ratings
     String Source;

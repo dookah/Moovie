@@ -28,9 +28,15 @@ import android.location.LocationManager;
 
 
 public class searchIntent extends AppCompatActivity {
-    //Declare GSON object so i can use it to parse data
+    //Declare datbase helper
+
+
+
+
     //make variable for input
     private TextInputLayout textInputMovie;
+
+    //Declare GSON object so i can use it to parse data
     Gson gson = new Gson();
 
     double lat = 0;
@@ -59,15 +65,31 @@ public class searchIntent extends AppCompatActivity {
         //Make a volley request queue
         RequestQueue queue = Volley.newRequestQueue(this);
 
-        // Request a string response from the provided URL.
+        // Request a string response from the provided URL using volley
         StringRequest stringRequest = new StringRequest(Request.Method.GET, URL,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
+                        //If no internet connection, cached response will be given.
                         Movies movie = gson.fromJson(response, Movies.class); //Use GSON to convert JSON to a java object
-                        if(movie.Title == null){
-                            Toast.makeText(searchIntent.this, "Movie not found, please try again!", Toast.LENGTH_SHORT).show();
+                        //Make a variable to hold if theres a response
+                        String responding = movie.Response;
+
+                        String title = movie.Title;
+                        String year = movie.Year;
+                        String rated = movie.Rated;
+                        String metascore = movie.Metascore;
+                        String imdbrating = movie.imdbRating;
+                        //Have to use compare to since object strings are different to normal strings apparently :@
+                        if(responding.compareTo("False") == 0){
+                            Toast.makeText(searchIntent.this, movie.Error, Toast.LENGTH_SHORT).show();
+
+                            //TODO Check if theres a movie with the requested title in the database
                         }else {
+                            //Make new movieDatabase object with the movie info in
+                            movieDatabase movies = new movieDatabase("ahaha", "ahah", "dd", "dddddd", "ddd");
+                            //Save the object into the database
+                            movies.save();
                             renderPage(movie);
                         }
                     }
@@ -75,7 +97,7 @@ public class searchIntent extends AppCompatActivity {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Toast.makeText(searchIntent.this,
-                        "No Network, Using Cache!", Toast.LENGTH_LONG).show();
+                        "No Network Connection, No Cached and Previously searched responses found!", Toast.LENGTH_LONG).show();
             }
         });
 
@@ -85,6 +107,8 @@ public class searchIntent extends AppCompatActivity {
 
     }
     public void renderPage(Movies movie){
+
+
         //Update the movie Title on the page
         TextView titleArea = findViewById(R.id.titleBox);
         titleArea.setText(movie.Title);
