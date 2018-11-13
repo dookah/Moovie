@@ -65,8 +65,11 @@ public class searchIntent extends AppCompatActivity {
                     @Override
                     public void onResponse(String response) {
                         Movies movie = gson.fromJson(response, Movies.class); //Use GSON to convert JSON to a java object
-                        //pass the java object with the current movie object
-                        renderPage(movie);
+                        if(movie.Title == null){
+                            Toast.makeText(searchIntent.this, "Movie not found, please try again!", Toast.LENGTH_SHORT).show();
+                        }else {
+                            renderPage(movie);
+                        }
                     }
                 }, new Response.ErrorListener() {
             @Override
@@ -101,37 +104,40 @@ public class searchIntent extends AppCompatActivity {
 
     //Fires on seen Movie button press
     public void seenMovie(View view) {
-
-        if (ContextCompat.checkSelfPermission(searchIntent.this, Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
-            // Make an instance of the Location Android Inbuult API.
-            LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-            //Use GPS to get location from provider
-            String locationProvider = LocationManager.GPS_PROVIDER;
-            Location lastKnownLocation = locationManager.getLastKnownLocation(locationProvider);
-
-            //New vairables to hold Lat and Long of phone
-            lat = lastKnownLocation.getLatitude();
-            longi = lastKnownLocation.getLongitude();
-        }
-
         //Grab the current films title
         TextView nameBox = findViewById(R.id.titleBox);
         String name = nameBox.getText().toString();
+        // Check if a valid movie as been searched before loading the complete intent
+        if (name != "") {
+            //Check if permission has been granted to look for locations, if not skip it and use 0,0
+            if (ContextCompat.checkSelfPermission(searchIntent.this, Manifest.permission.ACCESS_FINE_LOCATION)
+                    == PackageManager.PERMISSION_GRANTED) {
+                // Make an instance of the Location Android Inbuilt API.
+                LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+                //Use GPS to get location from provider
+                String locationProvider = LocationManager.GPS_PROVIDER;
+                Location lastKnownLocation = locationManager.getLastKnownLocation(locationProvider);
 
-        //make a new intent to show a film has been saved
-        Intent intent = new Intent(this, addedMovie.class);
+                //New vairables to hold Lat and Long of phone
+                lat = lastKnownLocation.getLatitude();
+                longi = lastKnownLocation.getLongitude();
+            }
+            //make a new intent to show a film has been saved
+            Intent intent = new Intent(this, addedMovie.class);
 
-        //Bundle in the coordinates to pass them to the new intent
-        Bundle coord = new Bundle();
-        coord.putDouble("lat", lat);
-        coord.putDouble("longi", longi);
-        coord.putString("movieName", name);
-        coord.putString("context", "Seen Movies!");
-        intent.putExtras(coord);
+            //Bundle in the coordinates to pass them to the new intent
+            Bundle coord = new Bundle();
+            coord.putDouble("lat", lat);
+            coord.putDouble("longi", longi);
+            coord.putString("movieName", name);
+            coord.putString("context", "Seen Movies!");
+            intent.putExtras(coord);
 
-        //Start the seen film page
-        startActivity(intent);
+            //Start the seen film page
+            startActivity(intent);
+        } else{
+            Toast.makeText(searchIntent.this, "Please seach a movie!", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
