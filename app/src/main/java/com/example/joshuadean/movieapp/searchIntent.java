@@ -33,13 +33,21 @@ public class searchIntent extends AppCompatActivity {
     private TextInputLayout textInputMovie;
     Gson gson = new Gson();
 
+    double lat = 0;
+    double longi = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_intent);
         textInputMovie = findViewById(R.id.textInputLayout);
 
+        //Request android Permission
+        ActivityCompat.requestPermissions(searchIntent.this,
+                new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                1);
     }
+
     public void movieSearch(View view){
         //get string inputted in the text box;
         String movieRawInput = textInputMovie.getEditText().getText().toString();
@@ -56,9 +64,7 @@ public class searchIntent extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        // Display the first 500 characters of the response string.
-                        String movieResponse =  response;
-                        Movies movie = gson.fromJson(movieResponse, Movies.class); //Use GSON to convert JSON to a java object
+                        Movies movie = gson.fromJson(response, Movies.class); //Use GSON to convert JSON to a java object
                         //pass the java object with the current movie object
                         renderPage(movie);
                     }
@@ -91,19 +97,10 @@ public class searchIntent extends AppCompatActivity {
         //Update the movie Title on the page
         TextView imdbArea = findViewById(R.id.imdbBox);
         imdbArea.setText(movie.imdbRating);
-
-
-
     }
-    public void seenMovie(View view) {//for when you click on the Seen button
 
-        double lat = 0;
-        double longi = 0;
-
-        //Request android Permission
-        ActivityCompat.requestPermissions(searchIntent.this,
-                new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                1);
+    //Fires on seen Movie button press
+    public void seenMovie(View view) {
 
         if (ContextCompat.checkSelfPermission(searchIntent.this, Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
@@ -114,26 +111,32 @@ public class searchIntent extends AppCompatActivity {
             Location lastKnownLocation = locationManager.getLastKnownLocation(locationProvider);
             //New vairables to hold Lat and Long of phone
             lat = lastKnownLocation.getLatitude();
-            longi = lastKnownLocation.getLongitude();
-        }
+            longi = lastKnownLocation.getLongitude();}
 
+
+        //runs if we have permissions
+        //make a new intent to show a film has been saved
         Intent intent = new Intent(this, addedMovie.class);
+
+        //Bundle in the coordinates to pass them to the new intent
+        Bundle coord = new Bundle();
+        coord.putDouble("lat", lat);
+        coord.putDouble("longi", longi);
+        intent.putExtras(coord);
+
+        //Start the seen film page
         startActivity(intent);
     }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         switch (requestCode) {
             case 1: {
                 // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                    // permission was granted, yay! Do the work!
-                    // display short notification stating permission granted
-                    Toast.makeText(searchIntent.this, "Location Permission Granted!", Toast.LENGTH_SHORT).show();
-
-                } else {
-
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(searchIntent.this, "Permission Granted!.", Toast.LENGTH_SHORT).show();
+                    }
+                    else {
                     Toast.makeText(searchIntent.this, "Permission Denied. Locations will not be saved.", Toast.LENGTH_SHORT).show();
                 }
                 return;

@@ -21,7 +21,7 @@
         </activity>
         <activity android:name=".searchIntent" />
         <activity android:name=".savedIntent" />
-        <activity android:name=".addedMovie"></activity>
+        <activity android:name=".addedMovie" />
     </application>
 
 </manifest>
