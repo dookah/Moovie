@@ -102,7 +102,7 @@ public class searchIntent extends AppCompatActivity {
             public void onErrorResponse(VolleyError error) {
                 //getting a specific record
                 //getting all table records
-
+                List<movieDatabase> note = Select.from(movieDatabase.class).where("title = ?", movieRawInput).fetch();
                 Toast.makeText(searchIntent.this, "No Network Connection, Using Database!", Toast.LENGTH_SHORT).show();
             }
         });
@@ -116,8 +116,7 @@ public class searchIntent extends AppCompatActivity {
 
         //getting all table records
         List<movieDatabase> notes = Select.from(movieDatabase.class).fetch();
-        //getting a specific record
-        List<movieDatabase> note = Select.from(movieDatabase.class).where("id = ?", 1).fetch();
+
         //Update the movie Title on the page
         TextView titleArea = findViewById(R.id.titleBox);
         titleArea.setText(movie.Title);
