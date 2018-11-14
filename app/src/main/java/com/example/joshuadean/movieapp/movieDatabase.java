@@ -37,7 +37,7 @@ public class movieDatabase extends Model {
     public Long getId() {
         return id;
     }
-    public String getTitle(){
+    public String getMovieTitle(){
         return title;
     }
     public String getYear(){

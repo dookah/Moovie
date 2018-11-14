@@ -63,7 +63,7 @@ public class searchIntent extends AppCompatActivity {
         //get string inputted in the text box;
         final String movieRawInput = textInputMovie.getEditText().getText().toString();
         //convert it to movie api standard
-        String movieInput = movieRawInput.replace(" ", "+");
+        final String movieInput = movieRawInput.replace(" ", "+");
         //Convert the movie input into a URL that works with the movie api
         String URL = "http://www.omdbapi.com/?t=" + movieInput + "&apikey=567b015";
 
@@ -90,7 +90,8 @@ public class searchIntent extends AppCompatActivity {
                             Toast.makeText(searchIntent.this, movie.Error, Toast.LENGTH_SHORT).show();
                             //TODO : Check if there's a movie with this title in the database
                         }else {
-                            movieDatabase note = new movieDatabase("The", "1992", "PG-14", "33", "33");
+                            //adds the searched movie to my SQLite database with the returned data, can search this offline!
+                            movieDatabase note = new movieDatabase(title, year, rated, metascore, imdbrating);
                             note.save();
 
                             renderPage(movie);
@@ -99,7 +100,10 @@ public class searchIntent extends AppCompatActivity {
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                //TODO : Search local dotabase, reverts to this for no internet
+                //getting a specific record
+                //getting all table records
+
+                Toast.makeText(searchIntent.this, "No Network Connection, Using Database!", Toast.LENGTH_SHORT).show();
             }
         });
         stringRequest.setShouldCache(false);
@@ -112,7 +116,8 @@ public class searchIntent extends AppCompatActivity {
 
         //getting all table records
         List<movieDatabase> notes = Select.from(movieDatabase.class).fetch();
-
+        //getting a specific record
+        List<movieDatabase> note = Select.from(movieDatabase.class).where("id = ?", 1).fetch();
         //Update the movie Title on the page
         TextView titleArea = findViewById(R.id.titleBox);
         titleArea.setText(movie.Title);
