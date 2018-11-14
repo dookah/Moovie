@@ -10,6 +10,10 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
+import com.reactiveandroid.ReActiveAndroid;
+import com.reactiveandroid.ReActiveConfig;
+import com.reactiveandroid.internal.database.DatabaseConfig;
+
 public class MainActivity extends AppCompatActivity {
 
 
@@ -17,6 +21,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        DatabaseConfig appDatabase = new DatabaseConfig.Builder(AppDatabase.class)
+                .build();
+
+        ReActiveAndroid.init(new ReActiveConfig.Builder(this)
+                .addDatabaseConfigs(appDatabase)
+                .build());
 
         TextView textView = findViewById(R.id.bigTitle);
         Typeface typeface = Typeface.createFromAsset(getAssets(), "fonts/happycow.ttf");

@@ -19,12 +19,16 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
+import com.reactiveandroid.query.Select;
+
 
 //Location Imports
 import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+
+import java.util.List;
 
 
 public class searchIntent extends AppCompatActivity {
@@ -52,11 +56,12 @@ public class searchIntent extends AppCompatActivity {
         ActivityCompat.requestPermissions(searchIntent.this,
                 new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                 1);
+
     }
 
     public void movieSearch(View view){
         //get string inputted in the text box;
-        String movieRawInput = textInputMovie.getEditText().getText().toString();
+        final String movieRawInput = textInputMovie.getEditText().getText().toString();
         //convert it to movie api standard
         String movieInput = movieRawInput.replace(" ", "+");
         //Convert the movie input into a URL that works with the movie api
@@ -83,13 +88,10 @@ public class searchIntent extends AppCompatActivity {
                         //Have to use compare to since object strings are different to normal strings apparently :@
                         if(responding.compareTo("False") == 0){
                             Toast.makeText(searchIntent.this, movie.Error, Toast.LENGTH_SHORT).show();
-
-                            //TODO Check if theres a movie with the requested title in the database
+                            //TODO : Check if there's a movie with this title in the database
                         }else {
-                            //Make new movieDatabase object with the movie info in
-                            movieDatabase movies = new movieDatabase("ahaha", "ahah", "dd", "dddddd", "ddd");
-                            //Save the object into the database
-                            movies.save();
+                            movieDatabase note = new movieDatabase("The", "1992", "PG-14", "33", "33");
+                            note.save();
 
                             renderPage(movie);
                         }
@@ -97,19 +99,19 @@ public class searchIntent extends AppCompatActivity {
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(searchIntent.this,
-                        "No Network Connection, No Cached and Previously searched responses found!", Toast.LENGTH_LONG).show();
+                //TODO : Search local dotabase, reverts to this for no internet
             }
         });
-
-// Add the request to the RequestQueue.
+        stringRequest.setShouldCache(false);
+        // Add the request to the RequestQueue.
         queue.add(stringRequest);
 
 
     }
     public void renderPage(Movies movie){
-        movieDatabase book = movieDatabase.findById(movieDatabase.class, 1);
-        String tittle = book.title;
+
+        //getting all table records
+        List<movieDatabase> notes = Select.from(movieDatabase.class).fetch();
 
         //Update the movie Title on the page
         TextView titleArea = findViewById(R.id.titleBox);
@@ -133,7 +135,7 @@ public class searchIntent extends AppCompatActivity {
         //Grab the current films title
         TextView nameBox = findViewById(R.id.titleBox);
         String name = nameBox.getText().toString();
-        // Check if a valid movie as been searched before loading the complete intent
+        // Check if a valid movie as been searched before loading the addedMovie intent, better UX
         if (name != "") {
             //Check if permission has been granted to look for locations, if not skip it and use 0,0
             if (ContextCompat.checkSelfPermission(searchIntent.this, Manifest.permission.ACCESS_FINE_LOCATION)
@@ -162,7 +164,8 @@ public class searchIntent extends AppCompatActivity {
             //Start the seen film page
             startActivity(intent);
         } else{
-            Toast.makeText(searchIntent.this, "Please seach a movie!", Toast.LENGTH_SHORT).show();
+            //warn the user that they've not searched a valid movie so theres nothing to add.
+            Toast.makeText(searchIntent.this, "Please search a movie!", Toast.LENGTH_SHORT).show();
         }
     }
 

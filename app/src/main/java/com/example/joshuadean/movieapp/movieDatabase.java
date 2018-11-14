@@ -1,25 +1,31 @@
 package com.example.joshuadean.movieapp;
 
-import com.orm.SugarRecord;
-import com.orm.dsl.Unique;
 
-public class movieDatabase extends SugarRecord{
-    @Unique
-    String title;
-    String year;
-    String rated;
-    String metascore;
-    String imdbrating;
+import com.reactiveandroid.Model;
+import com.reactiveandroid.annotation.Column;
+import com.reactiveandroid.annotation.PrimaryKey;
+import com.reactiveandroid.annotation.Table;
+
+@Table(name = "movieDatabase", database = AppDatabase.class )
+public class movieDatabase extends Model {
+    @PrimaryKey
+    private Long id;
+    @Column(name = "title")
+    private String title;
+    @Column(name = "year")
+    private String year;
+    @Column(name = "rated")
+    private String rated;
+    @Column(name = "metascore")
+    private String metascore;
+    @Column(name = "imdbrating")
+    private String imdbrating;
 
     //default constructor
     public movieDatabase(){
-        title = "";
-        year = "";
-        rated = "";
-        metascore = "";
-        imdbrating = "";
 
     }
+
     //Parameterised Constructor
     public movieDatabase(String title, String year, String rated, String metascore, String imdbrating){
         this.title = title;
@@ -28,4 +34,23 @@ public class movieDatabase extends SugarRecord{
         this.metascore = metascore;
         this.imdbrating = imdbrating;
     }
+    public Long getId() {
+        return id;
+    }
+    public String getTitle(){
+        return title;
+    }
+    public String getYear(){
+        return year;
+    }
+    public String getRated(){
+        return rated;
+    }
+    public String getMetaScore(){
+        return metascore;
+    }
+    public String getImdbRating(){
+        return imdbrating;
+    }
+
 }
