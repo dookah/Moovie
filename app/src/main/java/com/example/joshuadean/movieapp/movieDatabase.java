@@ -5,11 +5,13 @@ import com.reactiveandroid.Model;
 import com.reactiveandroid.annotation.Column;
 import com.reactiveandroid.annotation.PrimaryKey;
 import com.reactiveandroid.annotation.Table;
+import com.reactiveandroid.annotation.Unique;
 
 @Table(name = "movieDatabase", database = AppDatabase.class )
 public class movieDatabase extends Model {
     @PrimaryKey
     private Long id;
+    @Unique
     @Column(name = "title")
     private String title;
     @Column(name = "year")

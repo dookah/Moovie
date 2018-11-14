@@ -87,8 +87,24 @@ public class searchIntent extends AppCompatActivity {
                         String imdbrating = movie.imdbRating;
                         //Have to use compare to since object strings are different to normal strings apparently :@
                         if(responding.compareTo("False") == 0){
-                            Toast.makeText(searchIntent.this, movie.Error, Toast.LENGTH_SHORT).show();
                             //TODO : Check if there's a movie with this title in the database
+                            //query the database for the searched title
+                            List<movieDatabase> returnedMovies = Select.from(movieDatabase.class).where("title = ?", movieRawInput).fetch();
+                            // Check if
+                            if(returnedMovies.isEmpty() == true){
+                                // -------------------- This will trigger if the API cant find the movie --------------------
+                                Toast.makeText(searchIntent.this, "No movie found, please add it!", Toast.LENGTH_SHORT).show();
+                            }else{
+                                Movies localMovie = new Movies();
+                                //Assign the movie object variables from the database List returned from the query
+                                localMovie.Title = returnedMovies.get(0).getMovieTitle();
+                                localMovie.Year = returnedMovies.get(0).getYear();
+                                localMovie.Rated = returnedMovies.get(0).getRated();
+                                localMovie.Metascore = returnedMovies.get(0).getMetaScore();
+                                localMovie.imdbRating = returnedMovies.get(0).getImdbRating();
+                                //Pass the movie object to the render page function
+                                renderPage(localMovie);
+                            }
                         }else {
                             //adds the searched movie to my SQLite database with the returned data, can search this offline!
                             movieDatabase note = new movieDatabase(title, year, rated, metascore, imdbrating);
@@ -100,44 +116,39 @@ public class searchIntent extends AppCompatActivity {
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-
+                // -------------------- This will only enter if no Internet + no Cached response --------------------
                 //Query the database with the searched string and assign it to a list
-                List<movieDatabase> note = Select.from(movieDatabase.class).where("title = ?", "The Dark Knight").fetch();
-                //Get the first element of the list and assign each part of the first element to a variable
-                String title = note.get(0).getMovieTitle();
-                String year = note.get(0).getYear();
-                String rated = note.get(0).getRated();
-                String metascore = note.get(0).getMetaScore();
-                String imdb = note.get(0).getImdbRating();
-                //Make a new movie object so i can pass it to render page
-                Movies movie = new Movies();
-                //Assign the movie object variables
-                movie.Title = title;
-                movie.Year = year;
-                movie.Rated = rated;
-                movie.Metascore = metascore;
-                movie.imdbRating = imdb;
-                //Pass the movie object to the render page function
-                renderPage(movie);
+                List<movieDatabase> note = Select.from(movieDatabase.class).where("title = ?", movieRawInput).fetch();
 
-                Toast.makeText(searchIntent.this, "No Network Connection, Using Database!", Toast.LENGTH_SHORT).show();
+                //Check if the database found anything
+                if(note.isEmpty() != true) {
+                    //Make a new movie object so i can pass it to render page
+                    Movies movie = new Movies();
+                    //Assign the movie object variables from the database List returned from the query
+                    movie.Title = note.get(0).getMovieTitle();
+                    movie.Year = note.get(0).getYear();
+                    movie.Rated = note.get(0).getRated();
+                    movie.Metascore = note.get(0).getMetaScore();
+                    movie.imdbRating = note.get(0).getImdbRating();
+                    //Pass the movie object to the render page function
+                    renderPage(movie);
+                    //Warn the user the movie database is being used instead of the API
+                    Toast.makeText(searchIntent.this, "No Network Connection or Cached Results, Using Database!", Toast.LENGTH_SHORT).show();
+                }else{
+                    Toast.makeText(searchIntent.this, "No Results in Cache or Database!", Toast.LENGTH_SHORT).show();
+                }
             }
         });
+        stringRequest.setShouldCache(false);
         // Add the request to the RequestQueue.
         queue.add(stringRequest);
 
 
     }
     public void renderPage(Movies movie){
-
-        //getting all table records
-        List<movieDatabase> notes = Select.from(movieDatabase.class).fetch();
-
-        String title = notes.get(0).getMovieTitle();
-
         //Update the movie Title on the page
         TextView titleArea = findViewById(R.id.titleBox);
-        titleArea.setText(title);
+        titleArea.setText(movie.Title);
         //Update the movie Title on the page
         TextView yearArea = findViewById(R.id.yearBox);
         yearArea.setText(movie.Year);

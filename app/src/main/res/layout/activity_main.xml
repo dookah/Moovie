@@ -22,7 +22,7 @@
         android:id="@+id/Movies"
         android:layout_width="158dp"
         android:layout_height="48dp"
-        android:onClick="savedIntent"
+        android:onClick="moviesIntent"
         android:text="Movies"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
