@@ -85,6 +85,7 @@ public class searchIntent extends AppCompatActivity {
                         String rated = movie.Rated;
                         String metascore = movie.Metascore;
                         String imdbrating = movie.imdbRating;
+                        String posterURL = movie.Poster;
                         //Have to use compare to since object strings are different to normal strings apparently :@
                         if(responding.compareTo("False") == 0){
                             //TODO : Check if there's a movie with this title in the database
@@ -107,7 +108,7 @@ public class searchIntent extends AppCompatActivity {
                             }
                         }else {
                             //adds the searched movie to my SQLite database with the returned data, can search this offline!
-                            movieDatabase note = new movieDatabase(title, year, rated, metascore, imdbrating);
+                            movieDatabase note = new movieDatabase(title, year, rated, metascore, imdbrating, posterURL);
                             note.save();
 
                             renderPage(movie);

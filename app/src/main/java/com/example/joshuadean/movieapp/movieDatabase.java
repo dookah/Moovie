@@ -22,6 +22,8 @@ public class movieDatabase extends Model {
     private String metascore;
     @Column(name = "imdbrating")
     private String imdbrating;
+    @Column(name = "posterURL")
+    private String posterURL;
 
     //default constructor
     public movieDatabase(){
@@ -29,12 +31,13 @@ public class movieDatabase extends Model {
     }
 
     //Parameterised Constructor
-    public movieDatabase(String title, String year, String rated, String metascore, String imdbrating){
+    public movieDatabase(String title, String year, String rated, String metascore, String imdbrating, String posterURL){
         this.title = title;
         this.year = year;
         this.rated = rated;
         this.metascore = metascore;
         this.imdbrating = imdbrating;
+        this.posterURL = posterURL;
     }
     public Long getId() {
         return id;
@@ -54,5 +57,6 @@ public class movieDatabase extends Model {
     public String getImdbRating(){
         return imdbrating;
     }
+    public String getPosterURL() { return posterURL; }
 
 }
