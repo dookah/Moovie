@@ -100,13 +100,29 @@ public class searchIntent extends AppCompatActivity {
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                //getting a specific record
-                //getting all table records
-                List<movieDatabase> note = Select.from(movieDatabase.class).where("title = ?", movieRawInput).fetch();
+
+                //Query the database with the searched string and assign it to a list
+                List<movieDatabase> note = Select.from(movieDatabase.class).where("title = ?", "The Dark Knight").fetch();
+                //Get the first element of the list and assign each part of the first element to a variable
+                String title = note.get(0).getMovieTitle();
+                String year = note.get(0).getYear();
+                String rated = note.get(0).getRated();
+                String metascore = note.get(0).getMetaScore();
+                String imdb = note.get(0).getImdbRating();
+                //Make a new movie object so i can pass it to render page
+                Movies movie = new Movies();
+                //Assign the movie object variables
+                movie.Title = title;
+                movie.Year = year;
+                movie.Rated = rated;
+                movie.Metascore = metascore;
+                movie.imdbRating = imdb;
+                //Pass the movie object to the render page function
+                renderPage(movie);
+
                 Toast.makeText(searchIntent.this, "No Network Connection, Using Database!", Toast.LENGTH_SHORT).show();
             }
         });
-        stringRequest.setShouldCache(false);
         // Add the request to the RequestQueue.
         queue.add(stringRequest);
 
@@ -117,9 +133,11 @@ public class searchIntent extends AppCompatActivity {
         //getting all table records
         List<movieDatabase> notes = Select.from(movieDatabase.class).fetch();
 
+        String title = notes.get(0).getMovieTitle();
+
         //Update the movie Title on the page
         TextView titleArea = findViewById(R.id.titleBox);
-        titleArea.setText(movie.Title);
+        titleArea.setText(title);
         //Update the movie Title on the page
         TextView yearArea = findViewById(R.id.yearBox);
         yearArea.setText(movie.Year);
@@ -141,18 +159,24 @@ public class searchIntent extends AppCompatActivity {
         String name = nameBox.getText().toString();
         // Check if a valid movie as been searched before loading the addedMovie intent, better UX
         if (name != "") {
+
             //Check if permission has been granted to look for locations, if not skip it and use 0,0
             if (ContextCompat.checkSelfPermission(searchIntent.this, Manifest.permission.ACCESS_FINE_LOCATION)
                     == PackageManager.PERMISSION_GRANTED) {
+
                 // Make an instance of the Location Android Inbuilt API.
                 LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
                 //Use GPS to get location from provider
                 String locationProvider = LocationManager.GPS_PROVIDER;
                 Location lastKnownLocation = locationManager.getLastKnownLocation(locationProvider);
-
-                //New vairables to hold Lat and Long of phone
-                lat = lastKnownLocation.getLatitude();
-                longi = lastKnownLocation.getLongitude();
+                if(lastKnownLocation != null) {
+                    //New vairables to hold Lat and Long of phone
+                    lat = lastKnownLocation.getLatitude();
+                    longi = lastKnownLocation.getLongitude();
+                }
+                else{
+                    Toast.makeText(searchIntent.this, "Please launch maps to get a last known location!", Toast.LENGTH_SHORT).show();
+                }
             }
             //make a new intent to show a film has been saved
             Intent intent = new Intent(this, addedMovie.class);
