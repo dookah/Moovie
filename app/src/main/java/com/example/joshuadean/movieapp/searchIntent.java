@@ -33,10 +33,6 @@ import java.util.List;
 
 public class searchIntent extends AppCompatActivity {
     //Declare datbase helper
-
-
-
-
     //make variable for input
     private TextInputLayout textInputMovie;
 
@@ -136,6 +132,7 @@ public class searchIntent extends AppCompatActivity {
                     //Warn the user the movie database is being used instead of the API
                     Toast.makeText(searchIntent.this, "No Network Connection or Cached Results, Using Database!", Toast.LENGTH_SHORT).show();
                 }else{
+                    //Run if theres nothing in the database
                     Toast.makeText(searchIntent.this, "No Results in Cache or Database!", Toast.LENGTH_SHORT).show();
                 }
             }

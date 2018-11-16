@@ -31,6 +31,7 @@ dependencies {
     //I use this third party library to convert JSON to Java objects
     compile 'com.android.volley:volley:1.1.1'
     implementation 'com.reactiveandroid:reactiveandroid:1.4.3'
+    implementation 'com.squareup.picasso:picasso:2.71828'
 
 
 }

@@ -1,5 +1,6 @@
 package com.example.joshuadean.movieapp;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -16,10 +17,12 @@ import java.util.List;
 
 public class MovieList extends AppCompatActivity {
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_list);
+
 
         ListView lv = (ListView) findViewById(R.id.lv);
 
@@ -45,9 +48,21 @@ public class MovieList extends AppCompatActivity {
                 //get the text of the clicked element
                 String item = ((TextView)view).getText().toString();
                 //TODO On click open a page where it displays info about the movie and we can delete it from the database!
+                //new intent for movie info
+                Intent intent = new Intent(view.getContext(), movieInfo.class);
 
+                //Create a new bundle to hold the movie information
+                Bundle movieInfo = new Bundle();
+                //put the clicked title in the bundle
+                movieInfo.putString("title", item);
+                //put the title in the intent
+                intent.putExtras(movieInfo);
 
-                Toast.makeText(getBaseContext(), item, Toast.LENGTH_LONG).show();
+                //Start the new intent
+                startActivity(intent);
+                //Go back to the home page if the movie info intent finishes
+                finish();
+
             }
         });
     }

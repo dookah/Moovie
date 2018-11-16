@@ -24,7 +24,8 @@
         <activity android:name=".searchIntent" />
         <activity android:name=".savedIntent" />
         <activity android:name=".addedMovie" />
-        <activity android:name=".MovieList"></activity>
+        <activity android:name=".MovieList" />
+        <activity android:name=".movieInfo"></activity>
     </application>
 
 </manifest>
