@@ -19,6 +19,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
+import com.reactiveandroid.query.Insert;
 import com.reactiveandroid.query.Select;
 
 
@@ -41,6 +42,7 @@ public class searchIntent extends AppCompatActivity {
 
     double lat = 0;
     double longi = 0;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,7 +86,7 @@ public class searchIntent extends AppCompatActivity {
                         String posterURL = movie.Poster;
                         //Have to use compare to since object strings are different to normal strings apparently :@
                         if(responding.compareTo("False") == 0){
-                            //TODO : Check if there's a movie with this title in the database
+
                             //query the database for the searched title
                             List<movieDatabase> returnedMovies = Select.from(movieDatabase.class).where("title = ?", movieRawInput).fetch();
                             // Check if
@@ -92,6 +94,7 @@ public class searchIntent extends AppCompatActivity {
                                 // -------------------- This will trigger if the API cant find the movie --------------------
                                 Toast.makeText(searchIntent.this, "No movie found, please add it!", Toast.LENGTH_SHORT).show();
                             }else{
+                                //make a new instance of my movie object
                                 Movies localMovie = new Movies();
                                 //Assign the movie object variables from the database List returned from the query
                                 localMovie.Title = returnedMovies.get(0).getMovieTitle();
@@ -189,13 +192,20 @@ public class searchIntent extends AppCompatActivity {
             }
             //make a new intent to show a film has been saved
             Intent intent = new Intent(this, addedMovie.class);
+            //TODO Add movie to seen SQLite table
+            //getting a specific record
+            movieDatabase currentMovie = Select.from(movieDatabase.class).where("title = ?", name).fetchSingle();
+
+            //adds the movie to the seenDatabase if a movie is searched, using the paramaterised constructor in the table for seen movies.
+            seenDatabase seen = new seenDatabase(currentMovie, lat, longi);
+            seen.save();
 
             //Bundle in the coordinates to pass them to the new intent
             Bundle coord = new Bundle();
             coord.putDouble("lat", lat);
             coord.putDouble("longi", longi);
             coord.putString("movieName", name);
-            coord.putString("context", "Seen Movies!");
+            coord.putBoolean("context", true);
             intent.putExtras(coord);
 
             //Start the seen film page
@@ -204,6 +214,54 @@ public class searchIntent extends AppCompatActivity {
             //warn the user that they've not searched a valid movie so theres nothing to add.
             Toast.makeText(searchIntent.this, "Please search a movie!", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public void watchList(View view){
+        //Grab the current films title
+        TextView nameBox = findViewById(R.id.titleBox);
+        String name = nameBox.getText().toString();
+        // Check if a valid movie as been searched before loading the addedMovie intent, better UX
+        if (name != "") {
+            //Check if permission has been granted to look for locations, if not skip it and use 0,0
+            if (ContextCompat.checkSelfPermission(searchIntent.this, Manifest.permission.ACCESS_FINE_LOCATION)
+                    == PackageManager.PERMISSION_GRANTED) {
+                // Make an instance of the Location Android Inbuilt API.
+                LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+                //Use GPS to get location from provider
+                String locationProvider = LocationManager.GPS_PROVIDER;
+                Location lastKnownLocation = locationManager.getLastKnownLocation(locationProvider);
+                if(lastKnownLocation != null) {
+                    //New vairables to hold Lat and Long of phone
+                    lat = lastKnownLocation.getLatitude();
+                    longi = lastKnownLocation.getLongitude();
+                }
+                else{
+                    Toast.makeText(searchIntent.this, "Please launch maps to get a last known location!", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            //TODO Make watchlist table
+            //TODO add movie to watchlist table
+
+
+            //make a new intent to show a film has been saved
+            Intent intent = new Intent(this, addedMovie.class);
+
+            //Bundle in the coordinates to pass them to the new intent
+            Bundle coord = new Bundle();
+            coord.putDouble("lat", lat);
+            coord.putDouble("longi", longi);
+            coord.putString("movieName", name);
+            coord.putBoolean("context", true);
+            intent.putExtras(coord);
+
+            //Start the seen film page
+            startActivity(intent);
+        }else{
+            //warn the user that they've not searched a valid movie so theres nothing to add.
+            Toast.makeText(searchIntent.this, "Please search a movie!", Toast.LENGTH_SHORT).show();
+        }
+
     }
 
     @Override

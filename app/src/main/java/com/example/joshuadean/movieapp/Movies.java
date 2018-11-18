@@ -1,8 +1,12 @@
 package com.example.joshuadean.movieapp;
 
+import java.lang.reflect.Array;
 import java.util.List;
 
 public class Movies {
+    //I read these in as strings as the primary function will just be outputting the data
+    //I could read the JSON in with volley as JSONObject but no need to.
+    //Gson can interperet the string data
     public String Title;
     public String Year;
     public String Rated;
@@ -17,7 +21,9 @@ public class Movies {
     public String Country;
     public String Awards;
     public String Poster;
-    public ArrayData Rating;
+    //Since the Ratings in the JSON is an array of javascript objects, GSON will convert this to a list of a class
+    //the class is decalared below
+    public List<ArrayData> Ratings;
     public String Metascore;
     public String imdbRating;
     public String imdbVotes;
@@ -30,7 +36,8 @@ public class Movies {
     public String Response;
     public String Error;
 }
+//class to hold array data
 class ArrayData{ //Class to hold the array data from the ratings
     String Source;
-    String Val;
+    String Value;
 }
