@@ -2,9 +2,13 @@ package com.example.joshuadean.movieapp;
 
 import android.content.Intent;
 import android.graphics.Paint;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -17,6 +21,7 @@ import java.util.List;
 
 public class movieInfo extends AppCompatActivity {
     String movieTitle;
+    String moviePlot;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,6 +34,7 @@ public class movieInfo extends AppCompatActivity {
         List<movieDatabase> movieListing = Select.from(movieDatabase.class).where("title = ?", movieTitle).fetch();
         //grab the poster URL
         String posterUrl = movieListing.get(0).getPosterURL();
+        moviePlot = movieListing.get(0).getPlot();
 
         //Get the image and title view
         ImageView imageView=(ImageView) findViewById(R.id.imageView3);
@@ -43,7 +49,7 @@ public class movieInfo extends AppCompatActivity {
 
         TextView plot = findViewById(R.id.plot);
 
-        plot.setText(movieListing.get(0).getMetaScore());
+        plot.setText(moviePlot);
     }
     public void deleteCurrent(View view){
         //deleting record
@@ -51,6 +57,14 @@ public class movieInfo extends AppCompatActivity {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
         Toast.makeText(this, "Movie Deleted from database!", Toast.LENGTH_SHORT).show();
+
+    }
+    public void showPlot (View view){
+        Bundle plotBundle = new Bundle();
+        plotBundle.putString("plot", moviePlot);
+
+        dialogFragment frag = new dialogFragment();
+        frag.show(this.getSupportFragmentManager(),"Time Picker");
 
     }
 }

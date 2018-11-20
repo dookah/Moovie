@@ -20,7 +20,23 @@
         app:layout_constraintHorizontal_bias="0.47"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.973" />
+        app:layout_constraintVertical_bias="0.988" />
+
+    <Button
+        android:id="@+id/showPlot"
+        android:layout_width="394dp"
+        android:layout_height="61dp"
+        android:background="#8382d7"
+        android:elevation="2dp"
+        android:onClick="showPlot"
+        android:text="Show Plot"
+        android:textColor="@android:color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.47"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.876" />
 
     <TextView
         android:id="@+id/title"
@@ -51,12 +67,12 @@
     <TextView
         android:id="@+id/plot"
         android:layout_width="399dp"
-        android:layout_height="247dp"
+        android:layout_height="139dp"
         android:text="TextView"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.776" />
+        app:layout_constraintVertical_bias="0.545" />
 
 </android.support.constraint.ConstraintLayout>
