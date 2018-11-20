@@ -37,10 +37,21 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this,searchIntent.class);
         startActivity(intent);
     }
-    public void savedIntent(View view){
-        Intent intent = new Intent(this,savedIntent.class);
+    public void seenIntent(View view){
+        Intent intent = new Intent(this, seenActivity.class);
         startActivity(intent);
     }
+    public void watchIntent(View view){
+        Intent intent = new Intent(this, watchActivity.class);
+        startActivity(intent);
+    }
+
+
+
+    //TODO - add watchlist intent
+    //TODO - add seen intent
+
+
     public void moviesIntent(View view){
         Intent intent = new Intent(this, MovieList.class);
         startActivity(intent);

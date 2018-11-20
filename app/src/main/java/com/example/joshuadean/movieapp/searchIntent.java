@@ -140,7 +140,7 @@ public class searchIntent extends AppCompatActivity {
                 }
             }
         });
-        stringRequest.setShouldCache(false);
+
         // Add the request to the RequestQueue.
         queue.add(stringRequest);
 
@@ -193,10 +193,10 @@ public class searchIntent extends AppCompatActivity {
             //make a new intent to show a film has been saved
             Intent intent = new Intent(this, addedMovie.class);
             //TODO Add movie to seen SQLite table
-            //getting a specific record
+            //getting a specific record of the currently searched movie
             movieDatabase currentMovie = Select.from(movieDatabase.class).where("title = ?", name).fetchSingle();
 
-            //adds the movie to the seenDatabase if a movie is searched, using the paramaterised constructor in the table for seen movies.
+            //adds the movie to the seenDatabase if a movie is searched, using the parameterised constructor in the table for seen movies.
             seenDatabase seen = new seenDatabase(currentMovie, lat, longi);
             seen.save();
 
@@ -242,7 +242,11 @@ public class searchIntent extends AppCompatActivity {
 
             //TODO Make watchlist table
             //TODO add movie to watchlist table
-
+            //getting a specific record of the currently searched movie
+            movieDatabase currentMovie = Select.from(movieDatabase.class).where("title = ?", name).fetchSingle();
+            //adds the movie to the seenDatabase if a movie is searched, using the parameterised constructor in the table for seen movies.
+            watchDatabase watch = new watchDatabase(currentMovie, lat, longi);
+            watch.save();
 
             //make a new intent to show a film has been saved
             Intent intent = new Intent(this, addedMovie.class);

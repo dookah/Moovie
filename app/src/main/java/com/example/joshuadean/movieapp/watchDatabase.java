@@ -7,8 +7,8 @@ import com.reactiveandroid.annotation.ForeignKeyAction;
 import com.reactiveandroid.annotation.PrimaryKey;
 import com.reactiveandroid.annotation.Table;
 
-@Table(name = "seenDatabase", database = AppDatabase.class)
-public class seenDatabase extends Model {
+@Table(name = "watchDatabase", database = AppDatabase.class)
+public class watchDatabase extends Model {
 
     @PrimaryKey
     private Long id;
@@ -21,10 +21,10 @@ public class seenDatabase extends Model {
     private double longi;
 
     //default constructor needed
-    public seenDatabase(){
+    public watchDatabase(){
     }
     //parameterised constructor
-    public seenDatabase(movieDatabase movie, double lat, double longi){
+    public watchDatabase(movieDatabase movie, double lat, double longi){
         this.movie = movie;
         this.lat = lat;
         this.longi = longi;
