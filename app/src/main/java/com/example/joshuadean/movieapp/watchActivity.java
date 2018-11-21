@@ -17,6 +17,7 @@ import com.baoyz.swipemenulistview.SwipeMenu;
 import com.baoyz.swipemenulistview.SwipeMenuCreator;
 import com.baoyz.swipemenulistview.SwipeMenuItem;
 import com.baoyz.swipemenulistview.SwipeMenuListView;
+import com.reactiveandroid.query.Delete;
 import com.reactiveandroid.query.Select;
 
 import java.util.ArrayList;
@@ -83,8 +84,16 @@ public class watchActivity extends AppCompatActivity {
                 //When you click the first button
                 switch (index) {
                     case 0:
-                        //TODO Add the movie to the seen database
-                        //TODO Remove movie from to watch database
+
+                        //Get the movie item
+                        movieDatabase movieListing = Select.from(movieDatabase.class).where("title = ?", item).fetchSingle();
+                        //Search the watch database with that item
+                        watchDatabase watchedListing = Select.from(watchDatabase.class).where("movie = ?", movieListing).fetchSingle();
+                        //Insert it into Seen movie
+                        seenDatabase insertMovie = new seenDatabase(movieListing, 2, 3);
+                        insertMovie.save();
+                        //deleting record with the movie item
+
                         //TODO Return home
                         break;
                 }
@@ -96,6 +105,7 @@ public class watchActivity extends AppCompatActivity {
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                List<watchDatabase> notes = Select.from(watchDatabase.class).fetch();
                 //get the clicked title by getting the position in the array
                 String item = movieTitles.get(position);
                 Toast.makeText(watchActivity.this, item, Toast.LENGTH_SHORT).show();

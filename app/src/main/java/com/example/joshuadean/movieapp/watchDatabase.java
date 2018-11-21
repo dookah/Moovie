@@ -6,6 +6,7 @@ import com.reactiveandroid.annotation.Column;
 import com.reactiveandroid.annotation.ForeignKeyAction;
 import com.reactiveandroid.annotation.PrimaryKey;
 import com.reactiveandroid.annotation.Table;
+import com.reactiveandroid.annotation.Unique;
 
 @Table(name = "watchDatabase", database = AppDatabase.class)
 public class watchDatabase extends Model {
@@ -13,6 +14,7 @@ public class watchDatabase extends Model {
     @PrimaryKey
     private Long id;
     //One to one relationship, seen movies have a movie, latitude and longitude
+    @Unique
     @Column(name = "movie", onDelete = ForeignKeyAction.CASCADE)
     private movieDatabase movie;
     @Column(name = "lat")
