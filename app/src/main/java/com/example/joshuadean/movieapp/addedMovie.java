@@ -30,8 +30,15 @@ public class addedMovie extends AppCompatActivity {
         //Holds weather added to wishlist or watchlist
         boolean context = Coord.getBoolean("context");
 
+        String location;
+        if(context == true){
+            location = "Watch List";
+        }else{
+            location = "Seen Movies";
+        }
+
         TextView ps = findViewById(R.id.ps);
-        ps.setText(name + " is now in your " + context);
+        ps.setText(name + " is now in your " + location);
 }
     public void startMaps(View view){
         Intent intent = new Intent(this, filmLocation.class);

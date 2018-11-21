@@ -46,10 +46,6 @@ public class movieInfo extends AppCompatActivity {
 
         Picasso.get().load(posterUrl).into(imageView);
 
-
-        TextView plot = findViewById(R.id.plot);
-
-        plot.setText(moviePlot);
     }
     public void deleteCurrent(View view){
         //deleting record
@@ -64,6 +60,7 @@ public class movieInfo extends AppCompatActivity {
         plotBundle.putString("plot", moviePlot);
 
         dialogFragment frag = new dialogFragment();
+        frag.setArguments(plotBundle);
         frag.show(this.getSupportFragmentManager(),"Time Picker");
 
     }

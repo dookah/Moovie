@@ -18,7 +18,11 @@ public class dialogFragment extends DialogFragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.dialogfragment, container,
                 false);
+        Bundle bundle = getArguments();
+        String Plot = bundle.getString("plot");
+
         mTextView = (TextView) rootView.findViewById(R.id.moviePlot);
+        mTextView.setText(Plot);
         return rootView;
     }
 

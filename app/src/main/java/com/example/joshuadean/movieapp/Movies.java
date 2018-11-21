@@ -36,8 +36,8 @@ public class Movies {
     public String Response;
     public String Error;
 }
-//class to hold array data
-class ArrayData{ //Class to hold the array data from the ratings
+//class to hold the JSON array data
+class ArrayData{
     String Source;
     String Value;
 }

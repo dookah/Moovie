@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "186743955042",
+    "firebase_url": "https://crypto-order-223212.firebaseio.com",
+    "project_id": "crypto-order-223212",
+    "storage_bucket": "crypto-order-223212.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:186743955042:android:87268a674e0ca392",
+        "android_client_info": {
+          "package_name": "com.example.joshuadean.movieapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "186743955042-pvpbdh3mt1nv8sfe9e64a006689pv6st.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-Ak4e7ximCTbMYSyDD_y1S0Sf1kQpf90"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

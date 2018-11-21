@@ -206,7 +206,7 @@ public class searchIntent extends AppCompatActivity {
             coord.putDouble("lat", lat);
             coord.putDouble("longi", longi);
             coord.putString("movieName", name);
-            coord.putBoolean("context", true);
+            coord.putBoolean("context", false);
             intent.putExtras(coord);
 
             //Start the seen film page
