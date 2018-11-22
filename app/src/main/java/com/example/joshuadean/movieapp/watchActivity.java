@@ -87,6 +87,19 @@ public class watchActivity extends AppCompatActivity {
 
                         //Get the movie item
                         movieDatabase movieListing = Select.from(movieDatabase.class).where("title = ?", item).fetchSingle();
+                        //Get the movieID out of that item
+                        long currentMovieID = movieListing.getId();
+                        //fetch all the watched database listings into a list
+                        List<watchDatabase> watchedMovies = Select.from(watchDatabase.class).fetch();
+                        //loop through all the entities in the list
+                        for(int i = 0; i < watchedMovies.size(); i++) {
+                            //get the movie object out of all the watched movies
+                            movieDatabase movie = watchedMovies.get(i).getMovie();
+                            //use that objects id to find the originally found movie id.
+                            if (movie.getId() == currentMovieID) {
+
+                            }
+                        }
                         //Search the watch database with that item
                         watchDatabase watchedListing = Select.from(watchDatabase.class).where("movie = ?", movieListing).fetchSingle();
                         //Insert it into Seen movie
