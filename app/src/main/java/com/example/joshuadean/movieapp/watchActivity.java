@@ -84,29 +84,32 @@ public class watchActivity extends AppCompatActivity {
                 //When you click the first button
                 switch (index) {
                     case 0:
-
-                        //Get the movie item
+                        //Make a movie object of the movie that was clicked on
                         movieDatabase movieListing = Select.from(movieDatabase.class).where("title = ?", item).fetchSingle();
-                        //Get the movieID out of that item
-                        long currentMovieID = movieListing.getId();
                         //fetch all the watched database listings into a list
                         List<watchDatabase> watchedMovies = Select.from(watchDatabase.class).fetch();
-                        //loop through all the entities in the list
+                        //Linear Search looking to match the movie object to match the watched database object
                         for(int i = 0; i < watchedMovies.size(); i++) {
-                            //get the movie object out of all the watched movies
+                            //make an object of the current item of the
                             movieDatabase movie = watchedMovies.get(i).getMovie();
                             //use that objects id to find the originally found movie id.
-                            if (movie.getId() == currentMovieID) {
+                            if (movie.getId() == movieListing.getId()) {
+                                //Object of the found movie that matched the clicked item
+                                watchDatabase watched = watchedMovies.get(i);
+                                //Make a new item in the seen database with the found object
+                                seenDatabase insertMovie = new seenDatabase(watched.getMovie(),watched.getLat(),watched.getLongi());
+                                //save it in the database
+                                insertMovie.save();
+                                movieDatabase thisMovie = watched.getMovie();
+
+
+                                //delete it from the to-watch database
+                                Delete.from(watchDatabase.class).where("id = ?", movie.getId()).execute();
+
 
                             }
                         }
-                        //Search the watch database with that item
-                        watchDatabase watchedListing = Select.from(watchDatabase.class).where("movie = ?", movieListing).fetchSingle();
-                        //Insert it into Seen movie
-                        seenDatabase insertMovie = new seenDatabase(movieListing, 2, 3);
-                        insertMovie.save();
                         //deleting record with the movie item
-
                         //TODO Return home
                         break;
                 }
