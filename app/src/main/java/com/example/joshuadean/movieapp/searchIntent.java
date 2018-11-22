@@ -246,7 +246,7 @@ public class searchIntent extends AppCompatActivity {
             //getting a specific record of the currently searched movie
             movieDatabase currentMovie = Select.from(movieDatabase.class).where("title = ?", name).fetchSingle();
             //adds the movie to the seenDatabase if a movie is searched, using the parameterised constructor in the table for seen movies.
-            watchDatabase watch = new watchDatabase(currentMovie, lat, longi);
+            watchDatabase watch = new watchDatabase(currentMovie, name ,lat, longi);
             watch.save();
 
             //make a new intent to show a film has been saved

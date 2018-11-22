@@ -99,12 +99,8 @@ public class watchActivity extends AppCompatActivity {
                                 //Make a new item in the seen database with the found object
                                 seenDatabase insertMovie = new seenDatabase(watched.getMovie(),watched.getLat(),watched.getLongi());
                                 //save it in the database
-                                insertMovie.save();
-                                movieDatabase thisMovie = watched.getMovie();
-
-
-                                //delete it from the to-watch database
-                                Delete.from(watchDatabase.class).where("id = ?", movie.getId()).execute();
+                                insertMovie.save();//delete it from the to-watch database
+                                Delete.from(watchDatabase.class).where("name = ?", item).execute();
 
 
                             }

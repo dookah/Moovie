@@ -17,6 +17,8 @@ public class watchDatabase extends Model {
     @Unique
     @Column(name = "movie")
     private movieDatabase movie;
+    @Column(name = "name")
+    private String name;
     @Column(name = "lat")
     private double lat;
     @Column(name = "longi")
@@ -26,8 +28,9 @@ public class watchDatabase extends Model {
     public watchDatabase(){
     }
     //parameterised constructor
-    public watchDatabase(movieDatabase movie, double lat, double longi){
+    public watchDatabase(movieDatabase movie, String name ,double lat, double longi){
         this.movie = movie;
+        this.name = name;
         this.lat = lat;
         this.longi = longi;
     }
@@ -42,6 +45,9 @@ public class watchDatabase extends Model {
     }
     public double getLongi(){
         return longi;
+    }
+    public String getName(){
+        return name;
     }
 
 }
