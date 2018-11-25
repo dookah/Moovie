@@ -21,7 +21,7 @@ public class dialogFragment extends DialogFragment {
         Bundle bundle = getArguments();
         String Plot = bundle.getString("plot");
 
-        mTextView = (TextView) rootView.findViewById(R.id.moviePlot);
+        mTextView = rootView.findViewById(R.id.moviePlot);
         mTextView.setText(Plot);
         return rootView;
     }

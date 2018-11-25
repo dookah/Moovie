@@ -24,7 +24,7 @@ public class MovieList extends AppCompatActivity {
         setContentView(R.layout.activity_movie_list);
 
 
-        ListView lv = (ListView) findViewById(R.id.lv);
+        ListView lv = findViewById(R.id.lv);
 
         List<movieDatabase> movies = Select.from(movieDatabase.class).fetch();
 

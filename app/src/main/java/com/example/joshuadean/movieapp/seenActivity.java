@@ -21,7 +21,7 @@ public class seenActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_seen);
 
-        ListView lv = (ListView) findViewById(R.id.lv);
+        ListView lv = findViewById(R.id.lv);
 
         List<seenDatabase> movies = Select.from(seenDatabase.class).fetch();
 
@@ -30,6 +30,12 @@ public class seenActivity extends AppCompatActivity {
         for(int i = 0; i < movies.size(); i++){
             movieTitles.add(movies.get(i).getMovie().getMovieTitle());
         }
+
+        //Get the ID of the textview box that will hold the score
+        TextView highScore = findViewById(R.id.score);
+        //set the text to the current length of movies in the watchDatabse
+        //Since it's calcuted from the size of SQLITE it doesnt need to be saved persistently.
+        highScore.setText("High Score : " + movieTitles.size());
 
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
                 this,

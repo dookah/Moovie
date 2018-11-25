@@ -37,7 +37,7 @@ public class movieInfo extends AppCompatActivity {
         moviePlot = movieListing.get(0).getPlot();
 
         //Get the image and title view
-        ImageView imageView=(ImageView) findViewById(R.id.imageView3);
+        ImageView imageView= findViewById(R.id.imageView3);
         TextView titleArea = findViewById(R.id.title);
         //set the title to the passed in title
         titleArea.setText(movieTitle);

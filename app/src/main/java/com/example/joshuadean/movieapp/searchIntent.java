@@ -1,6 +1,7 @@
 package com.example.joshuadean.movieapp;
 
 import android.Manifest;
+import android.app.DownloadManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.design.widget.TextInputLayout;
@@ -40,6 +41,8 @@ public class searchIntent extends AppCompatActivity {
     //Declare GSON object so i can use it to parse data
     Gson gson = new Gson();
 
+    RequestQueue queue;
+
     double lat = 0;
     double longi = 0;
 
@@ -49,24 +52,22 @@ public class searchIntent extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_intent);
         textInputMovie = findViewById(R.id.textInputLayout);
+        //Make a volley request queue
+        queue = Volley.newRequestQueue(this);
 
         //Request android Permission
         ActivityCompat.requestPermissions(searchIntent.this,
                 new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                 1);
-
     }
 
-    public void movieSearch(View view){
+    public void movieSearch(View view) {
         //get string inputted in the text box;
         final String movieRawInput = textInputMovie.getEditText().getText().toString();
         //convert it to movie api standard
         final String movieInput = movieRawInput.replace(" ", "+");
         //Convert the movie input into a URL that works with the movie api
         String URL = "http://www.omdbapi.com/?t=" + movieInput + "&apikey=567b015";
-
-        //Make a volley request queue
-        RequestQueue queue = Volley.newRequestQueue(this);
 
         // Request a string response from the provided URL using volley
         StringRequest stringRequest = new StringRequest(Request.Method.GET, URL,
@@ -86,15 +87,15 @@ public class searchIntent extends AppCompatActivity {
                         String posterURL = movie.Poster;
                         String plot = movie.Plot;
                         //Have to use compare to since object strings are different to normal strings apparently :@
-                        if(responding.compareTo("False") == 0){
+                        if (responding.compareTo("False") == 0) {
 
                             //query the database for the searched title
                             List<movieDatabase> returnedMovies = Select.from(movieDatabase.class).where("title = ?", movieRawInput).fetch();
                             // Check if
-                            if(returnedMovies.isEmpty() == true){
+                            if (returnedMovies.isEmpty() == true) {
                                 // -------------------- This will trigger if the API cant find the movie --------------------
                                 Toast.makeText(searchIntent.this, "No movie found, please add it!", Toast.LENGTH_SHORT).show();
-                            }else{
+                            } else {
                                 //make a new instance of my movie object
                                 Movies localMovie = new Movies();
                                 //Assign the movie object variables from the database List returned from the query
@@ -106,7 +107,7 @@ public class searchIntent extends AppCompatActivity {
                                 //Pass the movie object to the render page function
                                 renderPage(localMovie);
                             }
-                        }else {
+                        } else {
                             //adds the searched movie to my SQLite database with the returned data, can search this offline!
                             movieDatabase note = new movieDatabase(title, year, rated, metascore, imdbrating, posterURL, plot);
                             note.save();
@@ -122,7 +123,7 @@ public class searchIntent extends AppCompatActivity {
                 List<movieDatabase> note = Select.from(movieDatabase.class).where("title = ?", movieRawInput).fetch();
 
                 //Check if the database found anything
-                if(note.isEmpty() != true) {
+                if (note.isEmpty() != true) {
                     //Make a new movie object so i can pass it to render page
                     Movies movie = new Movies();
                     //Assign the movie object variables from the database List returned from the query
@@ -135,7 +136,7 @@ public class searchIntent extends AppCompatActivity {
                     renderPage(movie);
                     //Warn the user the movie database is being used instead of the API
                     Toast.makeText(searchIntent.this, "No Network Connection or Cached Results, Using Database!", Toast.LENGTH_SHORT).show();
-                }else{
+                } else {
                     //Run if theres nothing in the database
                     Toast.makeText(searchIntent.this, "No Results in Cache or Database!", Toast.LENGTH_SHORT).show();
                 }
@@ -147,7 +148,8 @@ public class searchIntent extends AppCompatActivity {
 
 
     }
-    public void renderPage(Movies movie){
+
+    public void renderPage(Movies movie) {
         //Update the movie Title on the page
         TextView titleArea = findViewById(R.id.titleBox);
         titleArea.setText(movie.Title);
@@ -173,24 +175,7 @@ public class searchIntent extends AppCompatActivity {
         // Check if a valid movie as been searched before loading the addedMovie intent, better UX
         if (name != "") {
 
-            //Check if permission has been granted to look for locations, if not skip it and use 0,0
-            if (ContextCompat.checkSelfPermission(searchIntent.this, Manifest.permission.ACCESS_FINE_LOCATION)
-                    == PackageManager.PERMISSION_GRANTED) {
 
-                // Make an instance of the Location Android Inbuilt API.
-                LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-                //Use GPS to get location from provider
-                String locationProvider = LocationManager.GPS_PROVIDER;
-                Location lastKnownLocation = locationManager.getLastKnownLocation(locationProvider);
-                if(lastKnownLocation != null) {
-                    //New vairables to hold Lat and Long of phone
-                    lat = lastKnownLocation.getLatitude();
-                    longi = lastKnownLocation.getLongitude();
-                }
-                else{
-                    Toast.makeText(searchIntent.this, "Please launch maps to get a last known location!", Toast.LENGTH_SHORT).show();
-                }
-            }
             //make a new intent to show a film has been saved
             Intent intent = new Intent(this, addedMovie.class);
             //TODO Add movie to seen SQLite table
@@ -211,42 +196,22 @@ public class searchIntent extends AppCompatActivity {
 
             //Start the seen film page
             startActivity(intent);
-        } else{
+        } else {
             //warn the user that they've not searched a valid movie so theres nothing to add.
             Toast.makeText(searchIntent.this, "Please search a movie!", Toast.LENGTH_SHORT).show();
         }
     }
 
-    public void watchList(View view){
+    public void watchList(View view) {
         //Grab the current films title
         TextView nameBox = findViewById(R.id.titleBox);
         String name = nameBox.getText().toString();
         // Check if a valid movie as been searched before loading the addedMovie intent, better UX
         if (name != "") {
-            //Check if permission has been granted to look for locations, if not skip it and use 0,0
-            if (ContextCompat.checkSelfPermission(searchIntent.this, Manifest.permission.ACCESS_FINE_LOCATION)
-                    == PackageManager.PERMISSION_GRANTED) {
-                // Make an instance of the Location Android Inbuilt API.
-                LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-                //Use GPS to get location from provider
-                String locationProvider = LocationManager.GPS_PROVIDER;
-                Location lastKnownLocation = locationManager.getLastKnownLocation(locationProvider);
-                if(lastKnownLocation != null) {
-                    //New vairables to hold Lat and Long of phone
-                    lat = lastKnownLocation.getLatitude();
-                    longi = lastKnownLocation.getLongitude();
-                }
-                else{
-                    Toast.makeText(searchIntent.this, "Please launch maps to get a last known location!", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            //TODO Make watchlist table
-            //TODO add movie to watchlist table
             //getting a specific record of the currently searched movie
             movieDatabase currentMovie = Select.from(movieDatabase.class).where("title = ?", name).fetchSingle();
             //adds the movie to the seenDatabase if a movie is searched, using the parameterised constructor in the table for seen movies.
-            watchDatabase watch = new watchDatabase(currentMovie, name ,lat, longi);
+            watchDatabase watch = new watchDatabase(currentMovie, name, lat, longi);
             watch.save();
 
             //make a new intent to show a film has been saved
@@ -262,7 +227,7 @@ public class searchIntent extends AppCompatActivity {
 
             //Start the seen film page
             startActivity(intent);
-        }else{
+        } else {
             //warn the user that they've not searched a valid movie so theres nothing to add.
             Toast.makeText(searchIntent.this, "Please search a movie!", Toast.LENGTH_SHORT).show();
         }
@@ -276,8 +241,45 @@ public class searchIntent extends AppCompatActivity {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Toast.makeText(searchIntent.this, "Permission Granted!.", Toast.LENGTH_SHORT).show();
+                    // Make an instance of the Location Android Inbuilt API.
+
+                    LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+                    //Use GPS to get location from provider
+                    String locationProvider = LocationManager.GPS_PROVIDER;
+                    Location lastKnownLocation = locationManager.getLastKnownLocation(locationProvider);
+                    if (lastKnownLocation != null) {
+                        //New vairables to hold Lat and Long of phone
+                        lat = lastKnownLocation.getLatitude();
+                        longi = lastKnownLocation.getLongitude();
+                    } else {
+                        Toast.makeText(searchIntent.this, "Please launch maps to get a last known location!", Toast.LENGTH_SHORT).show();
                     }
-                    else {
+
+
+                    final TextView nearCin = findViewById(R.id.nearCinema);
+
+                    String url = "https://api.cinelist.co.uk/search/cinemas/coordinates/" + lat + "/" + longi;
+
+                    StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                            new Response.Listener<String>() {
+                                @Override
+                                public void onResponse(String response) {
+                                    cinemaLocation cinema = gson.fromJson(response, cinemaLocation.class);
+                                    // Display the first 500 characters of the response string.
+                                    nearCin.setText("Closest Cinema: " + cinema.cinemas.get(0).name + " " + cinema.postcode);
+                                }
+                            }, new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            nearCin.setText("Invalid Co-Ordinates, please launch maps!");
+                        }
+                    });
+
+// Add the request to the RequestQueue.
+                    queue.add(stringRequest);
+
+
+                } else {
                     Toast.makeText(searchIntent.this, "Permission Denied. Locations will not be saved.", Toast.LENGTH_SHORT).show();
                 }
                 return;

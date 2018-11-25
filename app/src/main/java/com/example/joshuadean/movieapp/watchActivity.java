@@ -30,7 +30,9 @@ public class watchActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_watch);
 
-        SwipeMenuListView lv = (SwipeMenuListView)findViewById(R.id.lv);
+        SwipeMenuListView lv = findViewById(R.id.lv);
+
+        Toast.makeText(watchActivity.this, "Tip : swipe left to mark as seen.", Toast.LENGTH_SHORT).show();
 
         List<watchDatabase> movies = Select.from(watchDatabase.class).fetch();
 
@@ -39,6 +41,11 @@ public class watchActivity extends AppCompatActivity {
         for(int i = 0; i < movies.size(); i++){
             movieTitles.add(movies.get(i).getMovie().getMovieTitle());
         }
+        //Get the ID of the textview box that will hold the score
+        TextView numToWatch = findViewById(R.id.numWatch);
+        //set the text to the current length of movies in the watchDatabse
+        //Since it's calcuted from the size of SQLITE it doesnt need to be saved persistently.
+        numToWatch.setText("Movies to Watch : " + movieTitles.size());
 
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
                 this,
