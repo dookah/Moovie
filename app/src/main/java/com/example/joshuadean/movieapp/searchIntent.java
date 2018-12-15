@@ -1,12 +1,10 @@
 package com.example.joshuadean.movieapp;
 
 import android.Manifest;
-import android.app.DownloadManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -20,14 +18,12 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
-import com.reactiveandroid.query.Insert;
 import com.reactiveandroid.query.Select;
 
 
 //Location Imports
 import android.content.Context;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 
 import java.util.List;
@@ -77,15 +73,15 @@ public class searchIntent extends AppCompatActivity {
                         //If no internet connection, cached response will be given.
                         Movies movie = gson.fromJson(response, Movies.class); //Use GSON to convert JSON to a java object
                         //Make a variable to hold if theres a response
-                        String responding = movie.Response;
+                        String responding = movie.getResponse();
 
-                        String title = movie.Title;
-                        String year = movie.Year;
-                        String rated = movie.Rated;
-                        String metascore = movie.Metascore;
-                        String imdbrating = movie.imdbRating;
-                        String posterURL = movie.Poster;
-                        String plot = movie.Plot;
+                        String title = movie.getTitle();
+                        String year = movie.getYear();
+                        String rated = movie.getRated();
+                        String metascore = movie.getMetascore();
+                        String imdbrating = movie.getImdbRating();
+                        String posterURL = movie.getPoster();
+                        String plot = movie.getPlot();
                         //Have to use compare to since object strings are different to normal strings apparently :@
                         if (responding.compareTo("False") == 0) {
 
@@ -99,11 +95,11 @@ public class searchIntent extends AppCompatActivity {
                                 //make a new instance of my movie object
                                 Movies localMovie = new Movies();
                                 //Assign the movie object variables from the database List returned from the query
-                                localMovie.Title = returnedMovies.get(0).getMovieTitle();
-                                localMovie.Year = returnedMovies.get(0).getYear();
-                                localMovie.Rated = returnedMovies.get(0).getRated();
-                                localMovie.Metascore = returnedMovies.get(0).getMetaScore();
-                                localMovie.imdbRating = returnedMovies.get(0).getImdbRating();
+                                localMovie.setTitle(returnedMovies.get(0).getMovieTitle());
+                                localMovie.setYear(returnedMovies.get(0).getYear());
+                                localMovie.setRated(returnedMovies.get(0).getRated());
+                                localMovie.setMetascore(returnedMovies.get(0).getMetaScore());
+                                localMovie.setImdbRating(returnedMovies.get(0).getImdbRating());
                                 //Pass the movie object to the render page function
                                 renderPage(localMovie);
                             }
@@ -127,11 +123,11 @@ public class searchIntent extends AppCompatActivity {
                     //Make a new movie object so i can pass it to render page
                     Movies movie = new Movies();
                     //Assign the movie object variables from the database List returned from the query
-                    movie.Title = note.get(0).getMovieTitle();
-                    movie.Year = note.get(0).getYear();
-                    movie.Rated = note.get(0).getRated();
-                    movie.Metascore = note.get(0).getMetaScore();
-                    movie.imdbRating = note.get(0).getImdbRating();
+                    movie.setTitle(note.get(0).getMovieTitle());
+                    movie.setYear(note.get(0).getYear());
+                    movie.setRated(note.get(0).getRated());
+                    movie.setMetascore(note.get(0).getMetaScore());
+                    movie.setImdbRating(note.get(0).getImdbRating());
                     //Pass the movie object to the render page function
                     renderPage(movie);
                     //Warn the user the movie database is being used instead of the API
@@ -152,19 +148,19 @@ public class searchIntent extends AppCompatActivity {
     public void renderPage(Movies movie) {
         //Update the movie Title on the page
         TextView titleArea = findViewById(R.id.titleBox);
-        titleArea.setText(movie.Title);
+        titleArea.setText(movie.getTitle());
         //Update the movie Title on the page
         TextView yearArea = findViewById(R.id.yearBox);
-        yearArea.setText(movie.Year);
+        yearArea.setText(movie.getYear());
         //Update the movie Title on the page
         TextView ratedArea = findViewById(R.id.ratedBox);
-        ratedArea.setText(movie.Rated);
+        ratedArea.setText(movie.getRated());
         //Update the movie Title on the page
         TextView metaArea = findViewById(R.id.metaBox);
-        metaArea.setText(movie.Metascore);
+        metaArea.setText(movie.getMetascore());
         //Update the movie Title on the page
         TextView imdbArea = findViewById(R.id.imdbBox);
-        imdbArea.setText(movie.imdbRating);
+        imdbArea.setText(movie.getImdbRating());
     }
 
     //Fires on seen Movie button press

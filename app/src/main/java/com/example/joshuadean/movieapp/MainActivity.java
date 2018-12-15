@@ -13,24 +13,24 @@ import android.widget.TextView;
 import com.reactiveandroid.ReActiveAndroid;
 import com.reactiveandroid.ReActiveConfig;
 import com.reactiveandroid.internal.database.DatabaseConfig;
-
+//Home page
 public class MainActivity extends AppCompatActivity {
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        //On the apps creation, create an object of the database config
         DatabaseConfig appDatabase = new DatabaseConfig.Builder(AppDatabase.class)
                 .build();
-
+        //Intilise the database with the Object
         ReActiveAndroid.init(new ReActiveConfig.Builder(this)
                 .addDatabaseConfigs(appDatabase)
                 .build());
-
+        //Find the title by the id and set it to a variable
         TextView textView = findViewById(R.id.bigTitle);
+        //Set a variable to a font inside the font folder
         Typeface typeface = Typeface.createFromAsset(getAssets(), "fonts/happycow.ttf");
+        //set the font to the variable font assigned above
         textView.setTypeface(typeface);
     }
     public void searchIntent(View view){

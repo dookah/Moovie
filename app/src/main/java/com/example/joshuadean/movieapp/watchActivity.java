@@ -116,6 +116,14 @@ public class watchActivity extends AppCompatActivity {
                         //TODO Return home
                         break;
                 }
+                // ------------- Used to reload the page on delete button click ---------------
+                finish();
+                //Override the animation to stop flashing
+                overridePendingTransition(0, 0);
+                //Start the intent again
+                startActivity(getIntent());
+                //Override the animation of fading back in.
+                overridePendingTransition(0, 0);
                 return false;
             }
         });
