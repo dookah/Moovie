@@ -58,6 +58,7 @@ public class seenActivity extends AppCompatActivity {
                 Bundle movieInfo = new Bundle();
                 //put the clicked title in the bundle
                 movieInfo.putString("title", item);
+                movieInfo.putString("source", "seen");
                 //put the title in the intent
                 intent.putExtras(movieInfo);
 

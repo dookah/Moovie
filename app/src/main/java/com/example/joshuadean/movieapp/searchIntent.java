@@ -179,7 +179,7 @@ public class searchIntent extends AppCompatActivity {
             movieDatabase currentMovie = Select.from(movieDatabase.class).where("title = ?", name).fetchSingle();
 
             //adds the movie to the seenDatabase if a movie is searched, using the parameterised constructor in the table for seen movies.
-            seenDatabase seen = new seenDatabase(currentMovie, lat, longi);
+            seenDatabase seen = new seenDatabase(currentMovie,currentMovie.getMovieTitle() ,lat, longi);
             seen.save();
 
             //Bundle in the coordinates to pass them to the new intent

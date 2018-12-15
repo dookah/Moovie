@@ -17,6 +17,8 @@ public class seenDatabase extends Model {
     @Unique
     @Column(name = "movie", onDelete = ForeignKeyAction.CASCADE)
     private movieDatabase movie;
+    @Column(name = "name")
+    private String name;
     @Column(name = "lat")
     private double lat;
     @Column(name = "longi")
@@ -26,10 +28,11 @@ public class seenDatabase extends Model {
     public seenDatabase(){
     }
     //parameterised constructor
-    public seenDatabase(movieDatabase movie, double lat, double longi){
+    public seenDatabase(movieDatabase movie,String name, double lat, double longi){
         this.movie = movie;
         this.lat = lat;
         this.longi = longi;
+        this.name = name;
     }
     public Long getId() {
         return id;
@@ -42,6 +45,9 @@ public class seenDatabase extends Model {
     }
     public double getLongi(){
         return longi;
+    }
+    public String getName(){
+        return name;
     }
 
 }

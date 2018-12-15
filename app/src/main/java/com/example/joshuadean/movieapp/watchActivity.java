@@ -104,7 +104,7 @@ public class watchActivity extends AppCompatActivity {
                                 //Object of the found movie that matched the clicked item
                                 watchDatabase watched = watchedMovies.get(i);
                                 //Make a new item in the seen database with the found object
-                                seenDatabase insertMovie = new seenDatabase(watched.getMovie(),watched.getLat(),watched.getLongi());
+                                seenDatabase insertMovie = new seenDatabase(watched.getMovie(),watched.getName(),watched.getLat(),watched.getLongi());
                                 //save it in the database
                                 insertMovie.save();//delete it from the to-watch database
                                 Delete.from(watchDatabase.class).where("name = ?", item).execute();
@@ -135,13 +135,13 @@ public class watchActivity extends AppCompatActivity {
                 List<watchDatabase> notes = Select.from(watchDatabase.class).fetch();
                 //get the clicked title by getting the position in the array
                 String item = movieTitles.get(position);
-                Toast.makeText(watchActivity.this, item, Toast.LENGTH_SHORT).show();
                 //new intent for movie info
                 Intent intent = new Intent(view.getContext(), movieInfo.class);
                 //Create a new bundle to hold the movie information
                 Bundle movieInfo = new Bundle();
                 //put the clicked title in the bundle
                 movieInfo.putString("title", item);
+                movieInfo.putString("source", "watch");
                 //put the title in the intent
                 intent.putExtras(movieInfo);
 
