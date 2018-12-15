@@ -23,6 +23,23 @@
         app:layout_constraintVertical_bias="0.758" />
 
     <Button
+        android:id="@+id/calanderButton"
+        android:layout_width="394dp"
+        android:layout_height="61dp"
+        android:background="#bf55ec"
+        android:elevation="2dp"
+        android:onClick="addEvent"
+        android:text="Add To Calander"
+        android:textColor="@android:color/white"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.47"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.757" />
+
+    <Button
         android:id="@+id/button6"
         android:layout_width="394dp"
         android:layout_height="61dp"
@@ -80,14 +97,5 @@
         app:layout_constraintVertical_bias="0.036"
 
         app:srcCompat="@drawable/common_google_signin_btn_icon_light" />
-
-    <Button
-        android:id="@+id/addCal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="addEvent"
-        android:text="Button"
-        tools:layout_editor_absoluteX="161dp"
-        tools:layout_editor_absoluteY="408dp" />
 
 </android.support.constraint.ConstraintLayout>

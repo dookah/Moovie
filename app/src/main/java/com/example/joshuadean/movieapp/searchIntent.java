@@ -3,13 +3,19 @@ package com.example.joshuadean.movieapp;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Base64;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.provider.Settings;
+import android.provider.Settings.System;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -227,7 +233,6 @@ public class searchIntent extends AppCompatActivity {
             //warn the user that they've not searched a valid movie so theres nothing to add.
             Toast.makeText(searchIntent.this, "Please search a movie!", Toast.LENGTH_SHORT).show();
         }
-
     }
 
     @Override
@@ -237,50 +242,72 @@ public class searchIntent extends AppCompatActivity {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Toast.makeText(searchIntent.this, "Permission Granted!.", Toast.LENGTH_SHORT).show();
+                    // ------------------- This all runs if permission is granted on the result --------------
                     // Make an instance of the Location Android Inbuilt API.
-
                     LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
                     //Use GPS to get location from provider
                     String locationProvider = LocationManager.GPS_PROVIDER;
+                    //Get the last known location of the phone into an object, red squiggily line incorrect
+                    //This line will never trigger if no permission due to being on correct result
                     Location lastKnownLocation = locationManager.getLastKnownLocation(locationProvider);
+                    //Check if the last known location is null, typically for emulators because they dont have a last known location
                     if (lastKnownLocation != null) {
-                        //New vairables to hold Lat and Long of phone
+                        //Set variables with lat and longi if not null
                         lat = lastKnownLocation.getLatitude();
                         longi = lastKnownLocation.getLongitude();
                     } else {
+                        //Tell the user to open the maps to get a last known location.
                         Toast.makeText(searchIntent.this, "Please launch maps to get a last known location!", Toast.LENGTH_SHORT).show();
                     }
-
-
+                    //Get the id for the text at the bottom of the app, this will be updated after the API Call
                     final TextView nearCin = findViewById(R.id.nearCinema);
-
+                    //Make a URL with the URI Being the latitude and Longitude
                     String url = "https://api.cinelist.co.uk/search/cinemas/coordinates/" + lat + "/" + longi;
-
+                    //Set up a string request using Volley with the url constructed above
                     StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                             new Response.Listener<String>() {
                                 @Override
                                 public void onResponse(String response) {
                                     cinemaLocation cinema = gson.fromJson(response, cinemaLocation.class);
-                                    // Display the first 500 characters of the response string.
+                                    //Set the text at the bottom of the page to the cinema name and postcode
                                     nearCin.setText("Closest Cinema: " + cinema.cinemas.get(0).name + " " + cinema.postcode);
+                                    String name = cinema.cinemas.get(0).name;
+                                    String postcode = cinema.postcode;
+                                    String encrypted = encrypt(name + " " + postcode);
+                                    String decrypted = decrypt(encrypted);
+                                    
+
                                 }
                             }, new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
+                            //Set the text saying bad coordinates from the phone, typically due to being 0,0 from no maps launched
                             nearCin.setText("Invalid Co-Ordinates, please launch maps!");
                         }
                     });
-
-// Add the request to the RequestQueue.
+                    // Add the request to the RequestQueue.
                     queue.add(stringRequest);
-
-
                 } else {
+                    //Warn the user they have denied the location permission
                     Toast.makeText(searchIntent.this, "Permission Denied. Locations will not be saved.", Toast.LENGTH_SHORT).show();
                 }
                 return;
             }
         }
     }
-
+    public String generateSalt(){
+        //Get the phones androidID
+        String ID = System.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID);
+        //return it, thisll act as the hash
+        return ID;
+    }
+    public String encrypt(String toEncrypt){
+       String salt = generateSalt();
+       String hash = Base64.encodeToString(toEncrypt.getBytes(), Base64.DEFAULT);
+       return hash + salt;
+    }
+    public String decrypt(String toDecrypt){
+        String deSalt = toDecrypt.replace(System.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID),"");
+        return new String(Base64.decode(deSalt, Base64.DEFAULT));
+    }
 }

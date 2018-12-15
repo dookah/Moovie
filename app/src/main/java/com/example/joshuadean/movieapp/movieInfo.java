@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Paint;
 import android.net.Uri;
 import android.provider.CalendarContract;
@@ -11,6 +12,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -67,8 +69,11 @@ public class movieInfo extends AppCompatActivity {
         if(source.equals("watch")) {
             //Get the button by ID
             Button locationButton = findViewById(R.id.location);
+            Button calanderButton = findViewById(R.id.calanderButton);
             //Set visibility to 0
-            locationButton.setVisibility(View.INVISIBLE);
+            locationButton.setVisibility(View.GONE);
+
+            calanderButton.setVisibility(View.VISIBLE);
         } //If it doesnt come from the watchList, itll run this next conditional loop (From seen)
         else if(source.equals("seen")){
             List<seenDatabase> seenListing = Select.from(seenDatabase.class).where("name = ?", movieTitle).fetch();
@@ -92,7 +97,7 @@ public class movieInfo extends AppCompatActivity {
 
         dialogFragment frag = new dialogFragment();
         frag.setArguments(plotBundle);
-        frag.show(this.getSupportFragmentManager(),"Time Picker");
+        frag.show(this.getSupportFragmentManager(),"plot");
     }
 
     public void showLocation(View view){
@@ -105,17 +110,23 @@ public class movieInfo extends AppCompatActivity {
         startActivity(intent);
     }
     public void addEvent(View view){
-        //Learnt from https://developer.android.com/guide/topics/providers/calendar-provider
-        ContentResolver contentResolver = this.getContentResolver();
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(CalendarContract.Events.TITLE, "Sample");
-        contentValues.put(CalendarContract.Events.DESCRIPTION, "Sample");
-        contentValues.put(CalendarContract.Events.EVENT_LOCATION, "Sample");
-        contentValues.put(CalendarContract.Events.DTSTART, Calendar.getInstance().getTimeInMillis() );
-        contentValues.put(CalendarContract.Events.DTEND, Calendar.getInstance().getTimeInMillis() + 60 + 60*1000);
-        contentValues.put(CalendarContract.Events.CALENDAR_ID, 3);
-        contentValues.put(CalendarContract.Events.EVENT_TIMEZONE, Calendar.getInstance().getTimeZone().getID());
-        //Insert the calander in, requires permissions
-        Uri uri = contentResolver.insert(CalendarContract.Events.CONTENT_URI,contentValues);
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_CALENDAR)
+                != PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(this, "No calender Permission!", Toast.LENGTH_SHORT).show();
+        }else {
+            //Learnt from https://developer.android.com/guide/topics/providers/calendar-provider
+            ContentResolver contentResolver = this.getContentResolver();
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(CalendarContract.Events.TITLE, "Watch Movie : " + movieTitle);
+            contentValues.put(CalendarContract.Events.DESCRIPTION, "You used Moo-vie to Book this Movie Time-Slot!");
+            contentValues.put(CalendarContract.Events.DTSTART, Calendar.getInstance().getTimeInMillis());
+            contentValues.put(CalendarContract.Events.DTEND, Calendar.getInstance().getTimeInMillis() + 60 + 60 * 1000);
+            contentValues.put(CalendarContract.Events.CALENDAR_ID, 3);
+            contentValues.put(CalendarContract.Events.EVENT_TIMEZONE, Calendar.getInstance().getTimeZone().getID());
+            //Insert the calander in, requires permissions
+            Uri uri = contentResolver.insert(CalendarContract.Events.CONTENT_URI, contentValues);
+
+            Toast.makeText(this, "Thanks! Added to your Google Calander.", Toast.LENGTH_SHORT).show();
+        }
     }
 }
