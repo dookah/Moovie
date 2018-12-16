@@ -2,6 +2,7 @@ package com.example.joshuadean.movieapp;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
@@ -24,6 +25,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
+import com.pddstudio.preferences.encrypted.EncryptedPreferences;
 import com.reactiveandroid.query.Select;
 
 
@@ -47,6 +49,7 @@ public class searchIntent extends AppCompatActivity {
 
     double lat = 0;
     double longi = 0;
+    EncryptedPreferences pref;
 
 
     @Override
@@ -61,6 +64,9 @@ public class searchIntent extends AppCompatActivity {
         ActivityCompat.requestPermissions(searchIntent.this,
                 new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                 1);
+
+        //Make a new instance of Secured shared preferences with the key being tbe android ID of the current phone
+        pref = new EncryptedPreferences.Builder(this).withEncryptionPassword(System.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID)).build();
     }
 
     public void movieSearch(View view) {
@@ -269,20 +275,28 @@ public class searchIntent extends AppCompatActivity {
                                 @Override
                                 public void onResponse(String response) {
                                     cinemaLocation cinema = gson.fromJson(response, cinemaLocation.class);
-                                    //Set the text at the bottom of the page to the cinema name and postcode
-                                    nearCin.setText("Closest Cinema: " + cinema.cinemas.get(0).name + " " + cinema.postcode);
+                                    //Get the name and postcode of the nearest cinema
                                     String name = cinema.cinemas.get(0).name;
                                     String postcode = cinema.postcode;
-                                    String encrypted = encrypt(name + " " + postcode);
-                                    String decrypted = decrypt(encrypted);
-                                    
+                                    //Concatinate them to be saved
+                                    String concat = name + " " + postcode;
+                                    //Save them in secure shared preferences
+                                    pref.edit().putString("address", concat).apply();
+                                    //Retrieve and output them
+                                    String address = pref.getString("address","");
+                                    nearCin.setText(address);
 
                                 }
                             }, new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
-                            //Set the text saying bad coordinates from the phone, typically due to being 0,0 from no maps launched
-                            nearCin.setText("Invalid Co-Ordinates, please launch maps!");
+                            String address = pref.getString("address","");
+                            if (address != null){
+                                nearCin.setText("Last Known : " + address);
+                            }else {
+                                //Set the text saying bad coordinates from the phone, typically due to being 0,0 from no maps launched
+                                nearCin.setText("Invalid Co-Ordinates, please launch maps!");
+                            }
                         }
                     });
                     // Add the request to the RequestQueue.
@@ -297,17 +311,31 @@ public class searchIntent extends AppCompatActivity {
     }
     public String generateSalt(){
         //Get the phones androidID
+        //Using a salt to avoid rainbow table attacks
         String ID = System.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID);
-        //return it, thisll act as the hash
+        //return it, this'll act as the salt
         return ID;
     }
     public String encrypt(String toEncrypt){
+        //Generate salt with method used above
        String salt = generateSalt();
-       String hash = Base64.encodeToString(toEncrypt.getBytes(), Base64.DEFAULT);
-       return hash + salt;
+       //Before hashing concatinate the string and the salt
+       String toHash = toEncrypt + salt;
+       //Use Base64 to encode the concatinated string
+       String hash = Base64.encodeToString(toHash.getBytes(), Base64.DEFAULT);
+       //Return the encoded value
+       return hash;
+    }
+    public String dehash(String toDehash){
+        //De-encode the string using  base64
+        return new String(Base64.decode(toDehash, Base64.DEFAULT));
     }
     public String decrypt(String toDecrypt){
-        String deSalt = toDecrypt.replace(System.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID),"");
-        return new String(Base64.decode(deSalt, Base64.DEFAULT));
+        //Call the dehash function to get rid of the hash
+        String Dehashed = dehash(toDecrypt);
+        //Decrypt it by removing the known salt based on the android ID device, if different ID it wont get rid of the salt
+        String Decrypt = Dehashed.replace(System.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID),"");
+        //Return the decrypted value
+        return Decrypt;
     }
 }
