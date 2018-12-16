@@ -42,7 +42,8 @@ public class seenActivity extends AppCompatActivity {
         // Write a message to the database
         String id = Settings.System.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID);
         mDatabase = FirebaseDatabase.getInstance().getReference();
-        mDatabase.child("Leaderboard").child(id).setValue(movieTitles.size());
+        String score = Integer.toString(movieTitles.size());
+        mDatabase.child(id).setValue(score);
 
 
 
@@ -90,7 +91,6 @@ public class seenActivity extends AppCompatActivity {
     public void viewLeaderboard(View view){
         Intent intent = new Intent(this, movieLeaderboard.class);
         startActivity(intent);
-
     }
 
 }
