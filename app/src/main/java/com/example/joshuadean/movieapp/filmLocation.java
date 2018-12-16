@@ -48,10 +48,10 @@ public class filmLocation extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
-        // Add a marker in Sydney and move the camera
+        // Add a marker at the film location
         LatLng filmLocation = new LatLng(lat, longi);
         mMap.addMarker(new MarkerOptions().position(filmLocation).title("Marker where you saw Film"));
+        mMap.moveCamera(CameraUpdateFactory.zoomTo(15));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(filmLocation));
     }
 }

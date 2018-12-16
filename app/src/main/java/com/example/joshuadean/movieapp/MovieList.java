@@ -55,6 +55,7 @@ public class MovieList extends AppCompatActivity {
                 Bundle movieInfo = new Bundle();
                 //put the clicked title in the bundle
                 movieInfo.putString("title", item);
+                movieInfo.putString("source", "movieList");
                 //put the title in the intent
                 intent.putExtras(movieInfo);
 

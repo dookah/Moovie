@@ -49,6 +49,7 @@
             android:label="@string/title_activity_film_location" />
         <activity android:name=".seenActivity" />
         <activity android:name=".watchActivity" />
+        <activity android:name=".movieLeaderboard"></activity>
     </application>
 
 </manifest>

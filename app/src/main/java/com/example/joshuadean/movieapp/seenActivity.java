@@ -1,6 +1,7 @@
 package com.example.joshuadean.movieapp;
 
 import android.content.Intent;
+import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -8,14 +9,20 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.reactiveandroid.query.Select;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class seenActivity extends AppCompatActivity {
-
+    private DatabaseReference mDatabase;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,8 +38,16 @@ public class seenActivity extends AppCompatActivity {
             movieTitles.add(movies.get(i).getMovie().getMovieTitle());
         }
 
+
+        // Write a message to the database
+        String id = Settings.System.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID);
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        mDatabase.child("Leaderboard").child(id).setValue(movieTitles.size());
+
+
+
         //Get the ID of the textview box that will hold the score
-        TextView highScore = findViewById(R.id.score);
+        final TextView highScore = findViewById(R.id.score);
         //set the text to the current length of movies in the watchDatabse
         //Since it's calcuted from the size of SQLITE it doesnt need to be saved persistently.
         highScore.setText("High Score : " + movieTitles.size());
@@ -72,4 +87,10 @@ public class seenActivity extends AppCompatActivity {
 
 
     }
+    public void viewLeaderboard(View view){
+        Intent intent = new Intent(this, movieLeaderboard.class);
+        startActivity(intent);
+
+    }
+
 }

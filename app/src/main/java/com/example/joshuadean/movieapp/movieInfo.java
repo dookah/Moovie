@@ -21,6 +21,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.reactiveandroid.query.Delete;
 import com.reactiveandroid.query.Select;
 import com.squareup.picasso.Picasso;
@@ -34,6 +36,7 @@ public class movieInfo extends AppCompatActivity {
     String moviePlot;
     double lat = 0;
     double longi = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,11 +67,10 @@ public class movieInfo extends AppCompatActivity {
         titleArea.setPaintFlags(titleArea.getPaintFlags() |   Paint.UNDERLINE_TEXT_FLAG);
         //Use Picasso to load the poster Url from the movieListing database and place it into the imageView defined above
         Picasso.get().load(posterUrl).into(imageView);
-
+        Button locationButton = findViewById(R.id.location);
         //if the source is watch we dont need to show where you saw the film so we hide that button
         if(source.equals("watch")) {
             //Get the button by ID
-            Button locationButton = findViewById(R.id.location);
             Button calanderButton = findViewById(R.id.calanderButton);
             //Set visibility to 0
             locationButton.setVisibility(View.GONE);
@@ -79,6 +81,9 @@ public class movieInfo extends AppCompatActivity {
             List<seenDatabase> seenListing = Select.from(seenDatabase.class).where("name = ?", movieTitle).fetch();
              lat = seenListing.get(0).getLat();
              longi = seenListing.get(0).getLongi();
+        }
+        else{
+            locationButton.setVisibility(View.GONE);
         }
     }
 
