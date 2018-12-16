@@ -52,10 +52,15 @@ public class movieLeaderboard extends AppCompatActivity {
                 //Runs when item added to database
                 //Get the current values
                 String value = dataSnapshot.getValue(String.class);
+                String key = dataSnapshot.getKey();
                 //add them to an array
                 mScores.add(value);
                 Collections.sort(mScores);
                 Collections.reverse(mScores);
+                //go through each score
+                for(String object: mScores){
+
+                }
                 //Update the array adapater
                 arrayAdapter.notifyDataSetChanged();
             }
