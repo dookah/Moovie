@@ -1,5 +1,6 @@
 package com.example.joshuadean.movieapp;
 
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -21,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.ListIterator;
 
 public class movieLeaderboard extends AppCompatActivity {
     //Initilise the Database
@@ -29,12 +31,12 @@ public class movieLeaderboard extends AppCompatActivity {
     private ListView listView;
     //List for holding the scores
     private ArrayList<String> mScores = new ArrayList<>();
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_leaderboard);
-
+        //Get the device ID to compare to the leaderboard stats
+        final String deviceId = Settings.System.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID);
         //Make an instance of the firebase database that was initilised up.
         mDatabase = FirebaseDatabase.getInstance().getReference();
         //Get the listview by the ID
@@ -42,8 +44,6 @@ public class movieLeaderboard extends AppCompatActivity {
         //Use an array adapter on the list of the scores to get it in a listview
         final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, mScores);
         listView.setAdapter(arrayAdapter);
-
-
         //Learnt from the docs found here : https://firebase.google.com/docs/database/android/lists-of-data
         //Listens to the Firebase update for updates and runs
         mDatabase.addChildEventListener(new ChildEventListener() {
@@ -54,13 +54,15 @@ public class movieLeaderboard extends AppCompatActivity {
                 String value = dataSnapshot.getValue(String.class);
                 String key = dataSnapshot.getKey();
                 //add them to an array
-                mScores.add(value);
+                //if the current element is yours say it's yours
+                if (key.equals(deviceId)){
+                    mScores.add(value + " | " + "You");
+                } else{ //if it's not yours just add the device key
+                    mScores.add(value + " | " + key);
+                }
+                //Sort the array to decending
                 Collections.sort(mScores);
                 Collections.reverse(mScores);
-                //go through each score
-                for(String object: mScores){
-
-                }
                 //Update the array adapater
                 arrayAdapter.notifyDataSetChanged();
             }
@@ -68,17 +70,13 @@ public class movieLeaderboard extends AppCompatActivity {
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 //Runs when item changed in the database
             }
-
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
             //Runs when moved
             }
-
             @Override
             public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 

@@ -26,6 +26,8 @@ public class movieDatabase extends Model {
     private String plot;
     @Column(name = "posterURL")
     private String posterURL;
+    @Column(name = "Runtime")
+    private String runtime;
 
     //default constructor
     public movieDatabase(){
@@ -33,7 +35,7 @@ public class movieDatabase extends Model {
     }
 
     //Parameterised Constructor
-    public movieDatabase(String title, String year, String rated, String metascore, String imdbrating, String posterURL, String plot){
+    public movieDatabase(String title, String year, String rated, String metascore, String imdbrating, String posterURL, String plot, String runtime){
         this.title = title;
         this.year = year;
         this.rated = rated;
@@ -41,6 +43,7 @@ public class movieDatabase extends Model {
         this.imdbrating = imdbrating;
         this.posterURL = posterURL;
         this.plot = plot;
+        this.runtime = runtime;
     }
     public Long getId() {
         return id;
@@ -62,5 +65,6 @@ public class movieDatabase extends Model {
     }
     public String getPosterURL() { return posterURL; }
     public String getPlot() { return plot; }
+    public String getRuntime() {return runtime;}
 
 }

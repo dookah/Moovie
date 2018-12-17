@@ -119,13 +119,32 @@ public class movieInfo extends AppCompatActivity {
                 != PackageManager.PERMISSION_GRANTED) {
             Toast.makeText(this, "No calender Permission!", Toast.LENGTH_SHORT).show();
         }else {
+            //get the move info from the database
+            movieDatabase listing = Select.from(movieDatabase.class).where("title = ?", movieTitle).fetchSingle();
+            //get the runtime
+            String runtime = listing.getRuntime();
+            //have to a string to hold the split string
+            String runtimeMins = "";
+            //find the index of the space
+            int indexOfSpace = runtime.indexOf(" ");
+            //check if there is a space
+            if (indexOfSpace != -1)
+            {
+                //split the string at the index of the space, meaning only the number is in the string
+                runtimeMins = runtime.substring(0 , indexOfSpace); //this will give abc
+            }
+            //comvert the number string found above to an integer
+            int runtimeMinsInt = Integer.parseInt(runtimeMins);
             //Learnt from https://developer.android.com/guide/topics/providers/calendar-provider
             ContentResolver contentResolver = this.getContentResolver();
             ContentValues contentValues = new ContentValues();
             contentValues.put(CalendarContract.Events.TITLE, "Watch Movie : " + movieTitle);
             contentValues.put(CalendarContract.Events.DESCRIPTION, "You used Moo-vie to Book this Movie Time-Slot!");
+            //Get the time right now
             contentValues.put(CalendarContract.Events.DTSTART, Calendar.getInstance().getTimeInMillis());
-            contentValues.put(CalendarContract.Events.DTEND, Calendar.getInstance().getTimeInMillis() + 60 + 60 * 1000);
+            //get the time in milliseconds of the movie running by * 60,0000
+            contentValues.put(CalendarContract.Events.DTEND, Calendar.getInstance().getTimeInMillis() + runtimeMinsInt*60000);
+            //Calander 3 for google calander
             contentValues.put(CalendarContract.Events.CALENDAR_ID, 3);
             contentValues.put(CalendarContract.Events.EVENT_TIMEZONE, Calendar.getInstance().getTimeZone().getID());
             //Insert the calander in, requires permissions

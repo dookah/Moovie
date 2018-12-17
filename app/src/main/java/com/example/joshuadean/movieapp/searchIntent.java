@@ -94,6 +94,7 @@ public class searchIntent extends AppCompatActivity {
                         String imdbrating = movie.getImdbRating();
                         String posterURL = movie.getPoster();
                         String plot = movie.getPlot();
+                        String runtime = movie.getRuntime();
                         //Have to use compare to since object strings are different to normal strings apparently :@
                         if (responding.compareTo("False") == 0) {
 
@@ -117,7 +118,7 @@ public class searchIntent extends AppCompatActivity {
                             }
                         } else {
                             //adds the searched movie to my SQLite database with the returned data, can search this offline!
-                            movieDatabase note = new movieDatabase(title, year, rated, metascore, imdbrating, posterURL, plot);
+                            movieDatabase note = new movieDatabase(title, year, rated, metascore, imdbrating, posterURL, plot, runtime);
                             note.save();
 
                             renderPage(movie);
