@@ -22,7 +22,7 @@ public class Movies {
     private String Poster;
     //Since the Ratings in the JSON is an array of javascript objects, GSON will convert this to a list of a class
     //the class is decalared below
-    private List<ArrayData> Ratings;
+    public List<ArrayData> Ratings;
     private String Metascore;
     private String imdbRating;
     private String imdbVotes;

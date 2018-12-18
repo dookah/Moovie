@@ -41,31 +41,29 @@ public class searchIntent extends AppCompatActivity {
     //Declare datbase helper
     //make variable for input
     private TextInputLayout textInputMovie;
-
     //Declare GSON object so i can use it to parse data
     Gson gson = new Gson();
-
+    //Create a new request queue
     RequestQueue queue;
-
+    //Set default latitude and longitudianl values
     double lat = 0;
     double longi = 0;
+    //Make an object for encrypted preferences
     EncryptedPreferences pref;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_intent);
+        //Get the input box
         textInputMovie = findViewById(R.id.textInputLayout);
         //Make a volley request queue
         queue = Volley.newRequestQueue(this);
-
         //Request android Permission
         ActivityCompat.requestPermissions(searchIntent.this,
                 new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                 1);
-
-        //Make a new instance of Secured shared preferences with the key being tbe android ID of the current phone
+        //Assign instance of Secure shared preferences with the key being tbe android ID of the current phone
         pref = new EncryptedPreferences.Builder(this).withEncryptionPassword(System.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID)).build();
     }
 
@@ -78,49 +76,45 @@ public class searchIntent extends AppCompatActivity {
         String URL = "http://www.omdbapi.com/?t=" + movieInput + "&apikey=567b015";
 
         // Request a string response from the provided URL using volley
+        //Code learnt from https://developer.android.com/training/volley/simple
         StringRequest stringRequest = new StringRequest(Request.Method.GET, URL,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        //If no internet connection, cached response will be given.
-                        Movies movie = gson.fromJson(response, Movies.class); //Use GSON to convert JSON to a java object
-                        //Make a variable to hold if theres a response
+                        //Make a new movie object and let GSON parse the JSON object into that java object
+                        Movies movie = gson.fromJson(response, Movies.class);
+                        //Make a variable to hold what the reponse is from the API call
                         String responding = movie.getResponse();
-
-                        String title = movie.getTitle();
-                        String year = movie.getYear();
-                        String rated = movie.getRated();
-                        String metascore = movie.getMetascore();
-                        String imdbrating = movie.getImdbRating();
-                        String posterURL = movie.getPoster();
-                        String plot = movie.getPlot();
-                        String runtime = movie.getRuntime();
-                        //Have to use compare to since object strings are different to normal strings apparently :@
+                        //If the API doesnt find anything on their database go into this statment
                         if (responding.compareTo("False") == 0) {
-
-                            //query the database for the searched title
+                            //Check if the database has any movie in it that was searched
                             List<movieDatabase> returnedMovies = Select.from(movieDatabase.class).where("title = ?", movieRawInput).fetch();
-                            // Check if
+                            //if the database doesnt have anything in it tell the user that no movies were found
                             if (returnedMovies.isEmpty() == true) {
-                                // -------------------- This will trigger if the API cant find the movie --------------------
-                                Toast.makeText(searchIntent.this, "No movie found, please add it!", Toast.LENGTH_SHORT).show();
-                            } else {
-                                //make a new instance of my movie object
-                                Movies localMovie = new Movies();
-                                //Assign the movie object variables from the database List returned from the query
-                                localMovie.setTitle(returnedMovies.get(0).getMovieTitle());
-                                localMovie.setYear(returnedMovies.get(0).getYear());
-                                localMovie.setRated(returnedMovies.get(0).getRated());
-                                localMovie.setMetascore(returnedMovies.get(0).getMetaScore());
-                                localMovie.setImdbRating(returnedMovies.get(0).getImdbRating());
-                                //Pass the movie object to the render page function
-                                renderPage(localMovie);
+                                Toast.makeText(searchIntent.this, "No movie found", Toast.LENGTH_SHORT).show();
+                            } else { //Else take that database object and call the function that will render it on the screen
+                                renderFromDB(returnedMovies);
                             }
-                        } else {
-                            //adds the searched movie to my SQLite database with the returned data, can search this offline!
+                        } else { //If api api does return the results we can use that movie object made earlier with GSON
+                            //fill in variables from the movie object, this will be added to the database
+                            String title = movie.getTitle();
+                            String year = movie.getYear();
+                            String rated = movie.getRated();
+                            String metascore = movie.getMetascore();
+                            String imdbrating = movie.getImdbRating();
+                            String posterURL = movie.getPoster();
+                            String plot = movie.getPlot();
+                            String runtime = movie.getRuntime();
+                            //Have a default value for rotten tomatoes incase there isn't any score returned
+                            //This is an example of why i dont parse the score to an int with GSON, Strings just work better for this app
+                            String rottenTomatoesScore = "Score not found!";
+                            //Check if there is a rotten tomatoes score.
+                            if (movie.getRatings().size() > 1) {
+                                rottenTomatoesScore = movie.getRatings().get(1).Value;
+                            }
+                            //Add the data returned from the API to the database
                             movieDatabase note = new movieDatabase(title, year, rated, metascore, imdbrating, posterURL, plot, runtime);
                             note.save();
-
                             renderPage(movie);
                         }
                     }
@@ -129,20 +123,11 @@ public class searchIntent extends AppCompatActivity {
             public void onErrorResponse(VolleyError error) {
                 // -------------------- This will only enter if no Internet + no Cached response --------------------
                 //Query the database with the searched string and assign it to a list
-                List<movieDatabase> note = Select.from(movieDatabase.class).where("title = ?", movieRawInput).fetch();
-
+                List<movieDatabase> movieList = Select.from(movieDatabase.class).where("title = ?", movieRawInput).fetch();
                 //Check if the database found anything
-                if (note.isEmpty() != true) {
-                    //Make a new movie object so i can pass it to render page
-                    Movies movie = new Movies();
-                    //Assign the movie object variables from the database List returned from the query
-                    movie.setTitle(note.get(0).getMovieTitle());
-                    movie.setYear(note.get(0).getYear());
-                    movie.setRated(note.get(0).getRated());
-                    movie.setMetascore(note.get(0).getMetaScore());
-                    movie.setImdbRating(note.get(0).getImdbRating());
-                    //Pass the movie object to the render page function
-                    renderPage(movie);
+                if (movieList.isEmpty() != true) {
+                    //render the database result to the screen
+                    renderFromDB(movieList);
                     //Warn the user the movie database is being used instead of the API
                     Toast.makeText(searchIntent.this, "No Network Connection or Cached Results, Using Database!", Toast.LENGTH_SHORT).show();
                 } else {
@@ -151,13 +136,10 @@ public class searchIntent extends AppCompatActivity {
                 }
             }
         });
-
         // Add the request to the RequestQueue.
         queue.add(stringRequest);
-
-
     }
-
+    //Function to add data to the screen, use a Movie Object
     public void renderPage(Movies movie) {
         //Update the movie Title on the page
         TextView titleArea = findViewById(R.id.titleBox);
@@ -281,9 +263,9 @@ public class searchIntent extends AppCompatActivity {
                                     String postcode = cinema.postcode;
                                     //Concatinate them to be saved
                                     String concat = name + " " + postcode;
-                                    //Save them in secure shared preferences
+                                    //Save the address into secure shared preferences encrypted, preventing them to be seen from the file explorer
                                     pref.edit().putString("address", concat).apply();
-                                    //Retrieve and output them
+                                    //Retrieve and output them onto the screen
                                     String address = pref.getString("address","");
                                     nearCin.setText(address);
 
@@ -291,8 +273,10 @@ public class searchIntent extends AppCompatActivity {
                             }, new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
+                            //If the api call doesnt work just retrieve the last known location from the shared preferences as a fallback
                             String address = pref.getString("address","");
                             if (address != null){
+                                //Set the test to the last known location
                                 nearCin.setText("Last Known : " + address);
                             }else {
                                 //Set the text saying bad coordinates from the phone, typically due to being 0,0 from no maps launched
@@ -310,33 +294,16 @@ public class searchIntent extends AppCompatActivity {
             }
         }
     }
-    public String generateSalt(){
-        //Get the phones androidID
-        //Using a salt to avoid rainbow table attacks
-        String ID = System.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID);
-        //return it, this'll act as the salt
-        return ID;
-    }
-    public String encrypt(String toEncrypt){
-        //Generate salt with method used above
-       String salt = generateSalt();
-       //Before hashing concatinate the string and the salt
-       String toHash = toEncrypt + salt;
-       //Use Base64 to encode the concatinated string
-       String hash = Base64.encodeToString(toHash.getBytes(), Base64.DEFAULT);
-       //Return the encoded value
-       return hash;
-    }
-    public String dehash(String toDehash){
-        //De-encode the string using  base64
-        return new String(Base64.decode(toDehash, Base64.DEFAULT));
-    }
-    public String decrypt(String toDecrypt){
-        //Call the dehash function to get rid of the hash
-        String Dehashed = dehash(toDecrypt);
-        //Decrypt it by removing the known salt based on the android ID device, if different ID it wont get rid of the salt
-        String Decrypt = Dehashed.replace(System.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID),"");
-        //Return the decrypted value
-        return Decrypt;
+    public void renderFromDB(List<movieDatabase> returnedMovies){
+        //make a new instance of my movie object
+        Movies localMovie = new Movies();
+        //Assign the movie object variables from the database List returned from the query
+        localMovie.setTitle(returnedMovies.get(0).getMovieTitle());
+        localMovie.setYear(returnedMovies.get(0).getYear());
+        localMovie.setRated(returnedMovies.get(0).getRated());
+        localMovie.setMetascore(returnedMovies.get(0).getMetaScore());
+        localMovie.setImdbRating(returnedMovies.get(0).getImdbRating());
+        //Pass the movie object to the render page function
+        renderPage(localMovie);
     }
 }
