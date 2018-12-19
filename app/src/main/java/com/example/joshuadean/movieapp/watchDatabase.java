@@ -15,7 +15,7 @@ public class watchDatabase extends Model {
     private Long id;
     //One to one relationship, seen movies have a movie, latitude and longitude
     @Unique
-    @Column(name = "movie")
+    @Column(name = "movie", onDelete = ForeignKeyAction.CASCADE)
     private movieDatabase movie;
     @Column(name = "name")
     private String name;
